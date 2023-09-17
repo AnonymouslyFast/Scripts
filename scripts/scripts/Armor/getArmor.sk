@@ -1,0 +1,6 @@
+function getArmorType(p: player, t: text) :: integer:
+	add 1 to {_a} if uncolored name of helmet of {_p} contains "%{_t}%"
+	add 1 to {_a} if uncolored name of chestplate of {_p} contains "%{_t}%"
+	add 1 to {_a} if uncolored name of leggings of {_p} contains "%{_t}%"
+	add 1 to {_a} if uncolored name of boots of {_p} contains "%{_t}%"
+	return {_a}

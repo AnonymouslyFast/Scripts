@@ -1,0 +1,40 @@
+import:
+	me.fast.ecozero.EcoZero
+
+on join: 
+	if {staffchat::%player's uuid%} is not set:
+		set {staffchat::%player's uuid%} to false
+		
+
+function getMysticPrefix() :: string:
+	return "<##FF5CCC>&lM<##DC52BF>&ly<##B947B1>&ls<##973DA4>&lt<##743296>&li<##512889>&lc"
+on chat:
+	{mute::%player's uuid%::*} is not set 
+	{mutechat} is not set
+	{staffchat::%player's uuid%} is not true
+	event is not canceled
+	cancel event
+	EcoZero.mcchat.sendMessage("**%uncolored player's prefix% %player's name% »** %message%").queue()
+	set {_premiumRank} to "NAN"
+	if player's groups contains "mystic":
+		set {_premiumRank} to getMysticPrefix()
+	else if player's groups contains "heroic":
+		set {_premiumRank} to "&4&lHeroic" 
+	else if player's groups contains "mvp+":
+		set {_premiumRank} to "&3&lMVP+" 
+	else if player's groups contains "mvp":
+		set {_premiumRank} to "&3&lMVP" 
+	else if player's groups contains "vip":
+		set {_premiumRank} to "&6&lVIP" 
+	set {_tooltip} to "&3&l%player's name% %nl%  &f- &bPremium Rank: &f%{_premiumRank}% %nl%  &f- &bLevel: &f%{lvl::%player's uuid%} ? 0%%nl%  &f- &bPrestige: &f%{prestige::%player's uuid%} ? 0%%nl%  &f- &bK/D: &f%{kills::%player's uuid%}/{deaths::%player's uuid%} ? 0%"
+	if group of player is not "mystic":
+		if {tag::%player's uuid%} is set:
+			broadcast formatted "<tooltip: %{_tooltip}%>%player's prefix% &f| %player% &8[&f%colored {tag::%player's uuid%}%&8]&7: %{chatColor::%player's uuid%}%%uncolored message%"
+		else:
+			broadcast formatted "<tooltip: %{_tooltip}%>%player's prefix% &f| %player%&7: %{chatColor::%player's uuid%}%%uncolored message%"
+	else if group of player is "mystic":
+		if {tag::%player's uuid%} is set:
+			broadcast formatted "<tooltip: %{_tooltip}%><##FF5CCC>&lM<##DC52BF>&ly<##B947B1>&ls<##973DA4>&lt<##743296>&li<##512889>&lc &f| %player% &8[&f%colored {tag::%player's uuid%}%&8]&7: %{chatColor::%player's uuid%}%%message%"
+		else:
+			broadcast formatted "<tooltip: %{_tooltip}%>&<##FF5CCC>&lM<##DC52BF>&ly<##B947B1>&ls<##973DA4>&lt<##743296>&li<##512889>&lc &f| %player%&7: %{chatColor::%player's uuid%}%%message%"
+			

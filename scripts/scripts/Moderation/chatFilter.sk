@@ -1,0 +1,35 @@
+on chat:
+	if {chatFilter::*} is not set:
+		set {ChatFilter::*} to ""
+	else:
+		set {_e::*} to message split at " "
+		set {_chat} to "%{ChatFilter::*}%" 
+		loop {_e::*}:
+			if {ChatFilter::*} contains loop-value:
+				send "&bChatFilter: &f%player%(&d%message%&f)" to all players where [input has permission "skript.staffchat"]
+				set {chatfilter::%player's uuid%} to true
+				cancel event
+				stop loop
+			
+command chatfilter [<string>] [<string>]:
+	permission: chatfilter.cmd
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			if arg-1 is "add":
+				if arg-2 is set:
+					add arg-2 to {chatFilter::*}
+					send "&bChatFilter &8&l>> &fAdded &d%arg-2% &dto the chat filter!"
+				else:
+					send "&cPlease send what you want to add!"
+			else if arg-1 is "remove":
+				if arg-2 is set:
+					if {chatFilter::*} contains arg-2:
+						remove arg-2 from {chatFilter::*}
+						send "&bChatFilter &8&l>> &fRemoved &d%arg-1% &dfrom the chat filter!"
+					else:
+						send "&cPlease enter a valid blocked word"
+				else:
+					send "&cPlease enter a word to be removed"
+			else:
+				send "/chatfilter <add/remove> <string>"

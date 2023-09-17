@@ -1,0 +1,43 @@
+options:
+	limeSlots: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34
+	greenSlots: 1, 3, 5, 7, 9, 17, 19, 25, 29, 31, 33, 35
+	mysticSlot: 13
+	vipSlot: 11
+	heroicSlot: 15
+	mvpSlot: 21
+	mvpplusSlot: 23
+	backSlot: 27
+	
+function getRankPrice(rank: string) :: integer:
+	if {_rank} = "vip":
+		return 5
+	else if {_rank} = "mvp":
+		return 10
+	else if {_rank} = "mvpplus":
+		return 15
+	else if {_rank} = "heroic":
+		return 20
+	if {_rank} = "mystic":
+		return 35
+		
+function openRankGUI(player: player):
+	set {_gui} to a chest inventory with 4 rows named "&7[&3&lE&b&lZ&7] &2&lBuy &7> &c&lRanks"
+	set slots {@limeSlots} of {_gui} to a lime stained glass pane named " " 
+	set slots {@greenSlots} of {_gui} to a green stained glass pane named " " 
+	set slot {@vipSlot} of {_gui} to a chest named "&6&lVIP" with lore "&2&lPrice: &f$%getRankPrice("vip")%" and "&7Click to go to webstore"
+	set slot {@mvpSlot} of {_gui} to a chest named "&3&lMVP" with lore "&2&lPrice: &f$%getRankPrice("mvp")%" and "&7Click to go to webstore"
+	set slot {@mvpplusSlot} of {_gui} to a chest named "&3&lMVP+" with lore "&2&lPrice: &f$%getRankPrice("mvpplus")%" and "&7Click to go to webstore"
+	set slot {@heroicSlot} of {_gui} to a chest named "&c&lHeroic" with lore "&2&lPrice: &f$%getRankPrice("heroic")%" and "&7Click to go to webstore"
+	set slot {@mysticSlot} of {_gui} to a ender chest named "&d&km <##FF5CCC>M<##DC52BF>y<##B947B1>s<##973DA4>t<##743296>i<##512889>c &d&km" with lore "&2&lPrice: &f$%getRankPrice("mystic")%" and "&7Click to go to webstore"
+	set slot {@backSlot} of {_gui} to a arrow named "&3&lBack" with lore "&7Click to go to main menu"
+	open {_gui} to {_player}
+	
+on inventory click:
+	event-inventory's name =  "&7[&3&lE&b&lZ&7] &2&lBuy &7> &c&lRanks"
+	cancel event
+	if event-slot = {@backSlot}:
+		openBuy(player)
+	else if event-slot = {@vipSlot} or {@mvpSlot} or {@mvpplusSlot} or {@heroicSlot} or {@mysticSlot}:
+		close player's inventory
+		send formatted "<link:%getURL("ranks")%>&7Click here to go to &d%getURL("ranks")%"
+	

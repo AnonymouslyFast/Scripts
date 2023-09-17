@@ -1,0 +1,29 @@
+every 3 seconds:
+	loop all players where [{trail::%input's uuid%} is "flame"]:
+		loop 30 times:
+			wait 1 tick
+			add 4 to {flametrail1}
+			add 4 to {flametrail2}
+			if {flametrail1} > 360:
+				set {flametrail1} to 0
+			if {flametrail2} > 360:
+				set {flametrail2} to 0
+			add 0.1 to {flameheight}
+			set {_v} to cylindrical vector radius 3, yaw {flametrail1}, height {flameheight}
+			lerp 0 of flame at loop-player ~ {_v}
+			set {_v1} to cylindrical vector radius 3, yaw {flametrail2}, height {flameheight}
+			lerp 0 of flame at loop-player ~ {_v1}
+		loop 30 times:
+			wait 1 tick
+			add 4 to {flametrail1}
+			add 4 to {flametrail2}
+			if {flametrail1} > 360:
+				set {flametrail1} to 0
+			if {flametrail2} > 360:
+				set {flametrail2} to 0
+			remove 0.1 from {flameheight}
+			set {_v} to cylindrical vector radius 3, yaw {flametrail1}, height {flameheight}
+			lerp 0 of flame at loop-player ~ {_v}
+			set {_v1} to cylindrical vector radius 3, yaw {flametrail2}, height {flameheight}
+			lerp 0 of flame at loop-player ~ {_v1}
+		

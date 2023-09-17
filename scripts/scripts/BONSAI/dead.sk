@@ -1,0 +1,6 @@
+function checkForDead(i: item) :: boolean:
+	set {_n} to nbt compound of {_i}
+	if tag "bonsai;dead" of {_n} is not set:
+		return false
+	else:
+		return true

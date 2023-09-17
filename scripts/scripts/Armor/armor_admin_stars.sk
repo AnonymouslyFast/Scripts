@@ -1,0 +1,3 @@
+on damage:
+	if getArmorType(victim, "stars") = 4:
+		set the damage to 0

@@ -1,0 +1,78 @@
+options:
+	bottomSlots: 27, 28, 29, 32, 33, 34, 35
+
+on join:
+	if {chatColor::%player's uuid%} is not set:
+		if player's group = "default":
+			set {chatColor::%player's uuid%} to "&7"
+		else:
+			set {chatColor::%player's uuid%} to "&f"
+on load: 
+	if {ChatColor::*} is not set:
+		set {ChatColor::*} to "&7 gray", "&c light_red", "&4 red", "&f white", "&8 dark_gray", "&d light_purple", "&5 purple", "&0 black", "&1 blue", "&2 green", "&3 dark_cyan", "&6 Gold", "&9 light_blue", "&a light_green", "&b cyan" and "&e Yellow"
+	if {chatColors::*} is not set:
+		set {chatColors::*} to "gray", "red", "light_red", "yellow", "blue", "cyan", "dark_cyan", "light_purple", "purple", "black", "light_blue", "gold", "green", "light_green" and "dark_gray" 
+
+
+command chatcolor [<string>] [<player>] [<string>]:
+	trigger:
+		if arg-1 is not set:
+			openChatColorGUI(player)
+		else:
+			if player has permission "chatcolor.admin":
+				if arg-1 = "give":
+					if arg-2 is set:
+						if arg-3 is set:
+							if {chatColors::*} contains arg-3:
+								chatColorGive(arg-2, arg-3)
+							else:
+								send "&3&lE&b&lZ &7Please enter a valid minecraft color!"
+						else:
+							send "&3&lE&b&lZ &7Please specify what chatcolor you want to give!"
+					else:
+						send "&3&lE&b&lZ &7Please specify what player you want to give the chatcolor to!"
+				else if arg-1 = "remove":
+					if arg-2 is set:
+						if arg-3 is set:
+							if {chatColors::*} contains arg-3:
+								chatColorRemove(arg-2, arg-3)
+							else:
+								send "&3&lE&b&lZ &7Please enter a valid minecraft color!"
+						else:
+							send "&3&lE&b&lZ &7Please specify what chatcolor you want to remove!"
+					else:
+						send "&3&lE&b&lZ &7Please specify what player you want to remove the chatcolor from!"
+						
+on tab complete of "/chatcolor":
+	if player has permission "chatcolor.admin":
+		set tab completions for position 1 to "give" or "remove"
+		set tab completions for position 2 to all players
+		set tab completions for position 3 to {chatColors::*}
+				
+						
+		
+	
+	
+	
+on inventory click:
+	if event-inventory's name = "&7[&3&lE&b&lZ&7] <##ff0000>C<##ffa500>h<##ffff00>a<##008000>t <##ff0000>C<##008000>o<##ffa500>l<##ffff00>o<##ff0000>r":
+		cancel event
+		if clicked slot != {@bottomSlots} or 31 or 30:
+			"%item%" != "<none>"
+			set {_color::*} to event-item's name split at " " 
+			if {_color::*} contains "light" or "dark":
+				set {_color::2} to "%{_color::2}%_%{_color::3}%"
+			if player has permission "chatcolor.%uncolored {_color::2} in lower case%":
+				set {chatColor::%player's uuid%} to {_color::1} 
+				send "&7You Chat Color is now: %event-item's name%"
+				openChatColorGUI(player)
+			else: 
+				send "&cNo permission to have that Color!"
+		else if clicked slot = 30:
+			if player's group is not "default":
+				set {chatColor::%player's uuid%} to "&f"
+				send "&7Your Chat Color is now: &fWhite" 
+			else if player's group is "default":
+				set {chatColor::%player's uuid%} to "&7"
+				send "&7Your Chat Color is now: &7Gray" 
+			openChatColorGUI(player)

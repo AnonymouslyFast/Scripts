@@ -1,0 +1,7 @@
+function giveBonsai(p: player, t: text, lore1: text, lore2: text, quote: text):
+	if {_t} is "oak":
+		set {_i} to oak sapling named "&fOak Bonsai" with lore " ", "&7Age&8: &e0s", "&7Water&8: &3100%%", " ", "%{_lore1}%", "%{_lore2}%", " ", "%{_quote}%"
+		set {_n} to nbt compound of {_i}
+		set int tag "bonsai;water" of {_n} to 100
+		set int tag "bonsai;age" of {_n} to 0
+		give {_p} 1 of {_i}

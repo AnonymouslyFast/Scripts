@@ -1,0 +1,85 @@
+command /setkit [<text>]:
+	permission: kits.set
+	trigger:
+		if arg-1 is set:
+			if {kit::%arg-1%::*} is set:
+				send "&cThis kit is already set"
+			else:
+				add arg-1 to {kits::*}
+				set {kit::%arg-1%::*} to all items in player's inventory
+				send "&aSet the kit '%arg-1%'"
+		else:
+			send "&cPlease specify the kit's name"
+
+
+command /delkit [<text>]:
+	permission: kits.delete
+	trigger:
+		if arg-1 is set:
+			if {kit::%arg-1%::*} is not set:
+				send "&cThis kit does not exist"
+			else:
+				remove arg-1 from {kits::*}
+				delete {kit::%arg-1%::*}
+				delete {uses::%arg-1%::*}
+				send "&aDeleted the kit '%arg-1%'"
+		else:	
+			send "&cPlease specify the kit's name"
+
+command /kituses <text> <text> <number> <offline player>:
+    permission: kits.uses
+    usage: "/kituses <Kit> Set/Add/Sub <Number> <Player>"
+    trigger:
+        if {kit::%arg-1%::*} is set:
+            if arg-2 is "set":
+                set {uses::%arg-1%::%arg-4's uuid%} to arg-3
+                send "&aSet kit claims of %arg-1% for %arg-4% to %arg-3%"
+            else if arg-2 is "add":
+                add arg-3 to {uses::%arg-1%::%arg-4's uuid%}
+                send "&aAdded %arg-3% claims of %arg-1% to %arg-4%"
+            else if arg-2 is "sub":
+                remove arg-3 from {uses::%arg-1%::%arg-4's uuid%}
+                send "&aRemoved %arg-3% claims of %arg-1% from %arg-4%"
+        else:
+            send "&cThis kit does not exist"
+
+command /claimkit [<text>]:
+	aliases: kits, kit
+	trigger:
+		if arg-1 is "list":
+			send "%nl%&c&lKits &fList of all kits:"
+			loop {kits::*}:
+				send "  &f- &7%loop-value% &d(kit.%loop-value%)"
+			send " "
+		else if arg-1 is set:
+			if {kit::%arg-1%::*} is set:
+				if player has permission "kit.%arg-1%":
+					if {uses::%arg-1%::%player's uuid%} is not set:
+						give player {kit::%arg-1%::*}
+						set {uses::%arg-1%::%player's uuid%} to 0
+						send "&3&lE&b&lZ &8&l>> &fClaimed the kit &d%arg-1%&f. Uses: %{uses::%arg-1%::%player's uuid%}%"
+					else if {uses::%arg-1%::%player's uuid%} != 0:
+						if player has space for {kit::%arg-1%::*}:
+							give player {kit::%arg-1%::*}
+							remove 1 from {uses::%arg-1%::%player's uuid%}
+							send "&3&lE&b&lZ &8&l>> &fClaimed the kit &d%arg-1%&f. Uses: %{uses::%arg-1%::%player's uuid%}%"
+						else:
+							send "&cYou do not have enough space to claim this kit"
+							
+					else: 	
+						send "&cYou dont have enough uses for this kit!"
+				else:
+					send "&cYou do not have permission to claim this kit"
+			else:
+				send "&cThis kit does not exist"
+		else:
+			send "Please enter a valid argument! (/kits <kit> or /kits list)"
+			
+on tab complete of "/kits" or "/claimkit":
+	set tab completions for position 1 to "list" and {kits::*}
+	
+on tab complete of "/delkit":
+	set tab completions for position 1 to {kits::*}
+			
+
+		

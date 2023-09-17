@@ -1,0 +1,12 @@
+command setNetherSpawn:
+	permission: op
+	trigger:
+		set {nether} to player's location
+
+on player move:
+	if block at player's location = purple stained glass pane:
+		block below player is obsidian
+		if "%player's world%" = "ul_skymine2":
+			teleport player to {nether}
+		else if player's world = world("nether2"):
+			teleport player to location(-10, 77, -11, world "ul_skymine2")

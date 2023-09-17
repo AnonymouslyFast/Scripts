@@ -1,0 +1,49 @@
+import:
+	me.fast.ecozero.Discord.VerifySLAPI
+	me.fast.ecozero.EcoZero
+	net.dv8tion.jda.api.events.message.MessageReceivedEvent
+	net.dv8tion.jda.api.EmbedBuilder
+	net.dv8tion.jda.api.events.GenericEvent
+	net.dv8tion.jda.api.hooks.EventListener
+	
+	
+on script load:
+	set {OnMessageRecivedEvent} to new proxy instance of MessageReceivedEvent using EventListener
+	
+	
+on join:
+	if VerifySLAPI.isVerified(player) = true:
+		player does not have permission "tag.|v|"
+		wait 2 seconds 
+		VerifySLAPI.giveVerifiedTag(player)
+		send "&cYou now have the &b&k|&9&lV&b&k| &cTag for verifying!"
+
+		
+on {MessageRecivedEvent}:
+	if event.getMessage().getContentDisplay().startsWith("!"):
+		set {msg::*} to event.getMessage().getContentDisplay() split at " "
+		if {msg::1} = "!playerinfo":
+			e.reply("Y").queue()
+			set {_player} to {msg::2} parsed as a offline player
+			if {_player} has not joined before:
+				event.reply(":x: That player has never joined before! Please pick a player that has.").queue()
+			else:
+				set {_bulder} to new EmbedBuilder()
+				set {_desc} to "Test desc"
+				{_builder}.setTitle("Player info: %{_player}%'s Info")
+				{_builder}.setDescription({_desc})
+				{_builder}.setColor(Color.red) if {_player} is offline
+				{_builder}.setColor(Color.red) if {_player} is online
+				e.replyEmbeds({_builder}.build()).queue()
+				
+function tester(player: player):
+	set {_item} to a stick named "&cShitter stick"
+	give {_player} 1 of {_item}
+	
+	
+on damage:
+	if attacker's held item's name = "&cShitter stick":
+		kill victim
+		wait 1.8 ticks
+		heal victim
+		heal victim

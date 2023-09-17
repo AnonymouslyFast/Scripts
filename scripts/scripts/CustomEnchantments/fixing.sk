@@ -1,0 +1,15 @@
+on join:
+	wait 5 ticks
+	player's name = "AnonymouslyFast"
+	loop player's inventory:
+		if loop-value's lore contains "&c&lExplosion <none>":
+			set {_item} to loop-value
+			remove loop-value from player
+			send {_item}
+			set {_l::*} to lore of {_item}
+			send {_l::*}
+			remove all "<none>" from {_l::*}
+			give player {_item} with lore {_l::*}
+			send "&cFixed your item"
+	
+			

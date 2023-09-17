@@ -1,0 +1,38 @@
+command faq:
+	trigger:
+		set {_gui} to chest inventory with 4 rows named "&c&lFAQ"
+		set slots numbers between 27 and 35 of {_gui} to gray stained glass pane named " "
+		set slot 0 of {_gui} to a enchanted book named "&cWhere's traders?" with lore "&7click to see answer"
+		set slot 1 of {_gui} to a enchanted book named "&chow do I apply custom enchants?" with lore "&7click to see answer"
+		set slot 2 of {_gui} to a enchanted book named "&chow do i trade a item with a enchantment on it?" with lore "&7click to see answer"
+		set slot 3 of {_gui} to 1 of enchanted book named "&cWhat's this server?" with lore "&7click to see answer"
+		set slot 4 of {_gui} to a enchanted book named "&cWhat are the rules?" with lore "&7click to see answer"
+		set slot 5 of {_gui} to a enchanted book named "&chow to disable drops?" with lore "&7click to see answer"
+		set slot 6 of {_gui} to a enchanted book named "&cCan I apply for staff?" with lore "&7click to see answer"
+		set slot 7 of {_gui} to a enchanted book named "&cWhat's the discord server?" with lore "&7click to see answer"
+		set slot 8 of {_gui} to a enchanted book named "&cWhat does the Zombie boss do?" with lore "&7click to see answer"
+		open {_gui} to player
+		
+on inventory click:
+	if event-inventory's name = "&c&lFAQ":
+		cancel event
+		if event-slot = 0:
+			send "&3&lE&b&lZ &8&l>> &fTraders can be found to the right of the spawn cave and next to crates. to fast travel to the traders you can do /warp traders."
+		else if event-slot = 1:
+			send "&3&lE&b&lZ &8&l>> &fTo apply custom enchantments you will pick the enchantment up in you inventory by left-clicking it, then left click it on the item you want to apply it to. This process is called ""dragndrop""."
+		else if event-slot = 2:
+			send "&3&lE&b&lZ &8&l>> &fThere's no way to trade items with custom enchantments, so you'll have to remove the enchant with the enchantment remover this can be found next to the custom enchantments villiger. the villger is called ""MSIC"". Please refer to ""how do I apply custom enchants"" FAQ to see how to apply it."
+		else if event-slot = 3:
+			send "&3&lE&b&lZ &8&l>> &fThis server is called &3&lEco&b&lZero&f, this server's genre is a skymine. Skymining is where you mine mines in the sky very simple."
+		else if event-slot = 4:
+			send "&3&lE&b&lZ &8&l>> &fThe rules can be found in /rules. I strongly suggest that you follow them."
+		else if event-slot = 5:
+			send "&3&lE&b&lZ &8&l>> &fTo disable drops do the command /stopdrop. to disable this command rerun the command again."
+		else if event-slot = 6:
+			send "&3&lE&b&lZ &8&l>> &fWe're accepting staff right now you have to be 13 years old and above and you have to have a playtime of 2 hours minimum. To apply do /discord and go to the channel ##staff-applications."
+		else if event-slot = 7:
+			send "&3&lE&b&lZ &8&l>> &fWe have a discord server, you can join the discord server by doing /discord and clicking the message or entering the link it gives by your self"
+		else if event-slot = 8:
+			send "&3&lE&b&lZ &8&l>> &fThe zombie boss is the final overworld boss. You have a chance of getting zombie flesh or zombie brains or nothing at all by killing the boss. With the items you get, you trade them for boss armor. You need this armor to be able to get nether armor!"
+			
+		

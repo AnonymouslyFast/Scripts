@@ -1,0 +1,36 @@
+command moneynote [<string>] [<player>] [<number>]:
+	permission: op
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 = "give":
+			if arg-2 is set:
+				if arg-3 is set:
+					if arg-2 is online:
+						set {_item} to a paper of mending named "&2&l$%arg-3%" with lore "&7Click to claim" with all flags hidden
+						set tag "value" of nbt of {_item} to arg-3
+						give {_item} to arg-2
+					else:
+						send "&c&lThat player is offline!"
+				else:
+					send "&c&lPlease enter a valid money amount"
+			else:
+				send "&c&lPlease enter a vaild online player"
+		else:
+			send "&f/moneynote give [player] [amount]"
+			
+			
+on click:
+	if event-item's type = paper:
+		set {_nbt} to nbt compound of event-item
+		set {_tag} to tag "value" of {_nbt}
+		{_tag} is set
+		if player is not sneaking:
+			add {_tag} to {balance::%player's uuid%} 
+			remove 1 of event-item from player's inventory 
+			send "&aAdded &2&l$%{_tag}% &ato your balance!"
+		else if player is sneaking:
+			set {_tag} to {_tag}*item amount of event-item
+			add {_tag} to {balance::%player's uuid%} 
+			remove item amount of event-item of event-item from player's inventory 
+			send "&aAdded &2&l$%{_tag}% &ato your balance!"
+						

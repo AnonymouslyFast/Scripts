@@ -1,0 +1,209 @@
+options:
+	prefix: &f[&3&lNations&f]
+	syncCoolDown: 10 minutes
+
+command nations [<text>] [<text>] [<text>] [<text>]:
+	aliases: nat, nats, nation
+	cooldown: 2.5 seconds
+	cooldown message: {@prefix} &7You're still on cooldown! &b%remaining time%
+	permission: nat
+	trigger:
+		#          Player commands          #
+		if arg-1 is "create":
+			if arg-3 is set:
+				execute player command "nations help"
+			else:
+				if arg-2 is set:
+					createNation(player, arg-2)
+				else:
+					send "{@prefix} &fPlease enter a name for your nation!"
+		else if arg-1 is "leave":
+			if arg-2 is set:
+				execute player command "nations help"
+			else:
+				leaveNation(player, {nation::%player's uuid%})
+			
+		else if arg-1 is "disband":
+			disbandNation(player, {nation::%player's uuid%})
+		else if arg-1 is "menu":
+			openNationGUI(player)
+		else if arg-1 is "join":
+			if {nationInvite::%player's uuid%} is set:
+				if arg-2 is not set:
+					nationJoin(player, {nationInvite::%player's uuid%})
+					clear {nationInvite::%player's uuid%}
+				else:
+					execute player command "nations help"
+			else:
+				send "{@prefix} &fYou do not have a invite to join a nation!"
+		else if arg-1 is "invite":
+			if arg-2 is set:
+				if arg-3 is not set:
+					set {_player} to arg-2 parsed as player
+					if {_player} is set:
+						nationInvite(player, {_player})
+					else:
+						send "{@prefix} &fPlease provide a online player!"
+				else:
+					execute player command "nations help"
+			else:
+				send "{@prefix} &fPlease provide a online player!"
+		else if arg-1 is "kick":
+			if arg-2 is set:
+				if arg-3 is not set:
+					set {_player} to arg-2 parsed as offline player
+					if {_player} is set:
+						nationKickPlayer(player, {_player})
+					else:
+						send "{@prefix} &fPlease provide a valid player!"
+				else:
+					execute player command "nations help"
+			else:
+				send "{@prefix} &fPlease provide a valid player!"
+		else if arg-1 is "help":
+			if arg-2 is not set:
+				send "e"
+			else:
+				execute player command "nations help"
+			
+		
+				
+		
+		
+			
+			
+				
+				
+				
+				
+		#          Admin commands          #		
+		else if arg-1 is "filter":
+			if player has permission "nations.filter":
+				if arg-2 is "add":
+					if arg-3 is set:
+						if {nationsBlocked::*} does not contain arg-3:
+							add arg-3 to {nationsBlocked::*}
+							send "{@prefix} &fAdded &b%arg-3% &fto the nations filter!"
+						else:
+							send "{@prefix} &fThat word is already in the nations filter!"
+					else:
+						send "{@prefix} &f/nations filter <add/remove/list> [string]"
+				else if arg-2 is "remove":
+					if arg-3 is set:
+						if {nationsBlocked::*} contains arg-3:	
+							remove arg-3 from {nationsBlocked::*}
+							send "{@prefix} &fRemoved &b%arg-3% &ffrom the nations filter!"
+						else:
+							send "{@prefix} &fThat word is not in the nations filter!"
+					else:
+						send "{@prefix} &f/nations filter <add/remove/list> [string]"
+				else if arg-2 is "list":
+					send "&3&lNations List:" 
+					loop {nationsBlocked::*}:
+						send "  &8- &f%loop-value%"
+				else:
+					send "{@prefix} &f/nations filter <add/remove/list> [string]"
+			else:
+				send "&cNo permission!"
+		
+		else:
+			execute player command "nations help"
+
+
+on death:
+	if {nation::%victim's uuid%} is set:
+		add 1 to {nations::%{nation::%victim's uuid%}%::deaths}
+		set {natKD::%{nation::%victim's uuid%}%} to {nations::%{nation::%victim's uuid%}%::kills}/{nations::%{nation::%victim's uuid%}%::deaths}
+	if {nation::%attacker's uuid%} is set:
+		add 1 to {nations::%{nation::%attacker's uuid%}%::kills}
+		set {natKD::%{nation::%attacker's uuid%}%} to {nations::%{nation::%attacker's uuid%}%::kills}/{nations::%{nation::%attacker's uuid%}%::deaths}
+		
+
+every {@syncCoolDown}:
+	syncNationTop()
+
+
+# Listener for the GUI
+on inventory click:
+	if event-inventory's name = "{@prefix} &fMenu":
+		cancel event
+		if event-slot = 11:
+			openNationTopGUI(player)
+		else if event-slot = 4:
+			openPlayerNationGUI(player)
+		else if event-slot = 22:
+			close player's inventory
+			
+			
+	else if event-inventory's name = "{@prefix} &6&lTop":
+		cancel event
+		if event-slot = 27:
+			openNationGUI(player)
+			
+			
+			
+	else if event-inventory's name = "&6&lYour {@prefix}":
+		cancel event
+		if event-slot = 31:
+			openNationGUI(player)
+		else if event-slot = 15:
+			if {nationPermissions::%player's uuid%::*} contains "Manage_Permissions" or "Admin":
+				nationOpenPermissionsGUI(player)
+			else:
+				send "{@prefix} &fYou do not have the permission &b""Manage_Permissions""&f. Please tell your leader to give you the perm to access this!"
+	
+	else if event-inventory's name = "{@prefix} &9&lPermissions":
+		cancel event
+		if event-slot = 49:
+			openPlayerNationGUI(player)
+		else if event-slot is a player skull:
+			set {_e} to event-slot's name
+			set {_head} to uncolored {_e} parsed as offline player
+			if {_head} != player:
+				nationOpenPlayerPermGUI(player, {_head})
+			else:
+				send "{@prefix} &fYou cannot manage your own perms!"
+			
+	else if event-inventory's name contains " &9&lPerms":
+		cancel event
+		set {_e::*} to event-inventory's name split at "'s"
+		set {_player} to uncolored {_e::1} parsed as offline player
+		if event-slot = 31:
+			nationOpenPermissionsGUI(player)
+		else if event-slot's name = "&aInvite Members":
+			if {nationPermissions::%{_player}'s uuid%::*} contains "Invite_Players":
+				remove "Invite_players" from {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fRemoved &b""Invite_Players"" &ffrom &a%{_player}%&f's permissions!"
+			else:
+				add "Invite_players" to {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fAdded &b""Invite_Players"" &fto &a%{_player}%&f's permissions!"
+		else if event-slot's name = "&9Manage Permissions":
+			if {nationPermissions::%{_player}'s uuid%::*} contains "Manage_Permissions":
+				remove "Manage_Permissions" from {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fRemoved &b""Manage_Permissions"" &ffrom &a%{_player}%&f's permissions!"
+			else:
+				add "Manage_Permissions" to {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fAdded &b""Manage_Permissions"" &fto &a%{_player}%&f's permissions!"
+		else if event-slot's name = "&4Kick Members":
+			if {nationPermissions::%{_player}'s uuid%::*} contains "Kick_Players":
+				remove "Kick_Players" from {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fRemoved &b""Kick_Players"" &ffrom &a%{_player}%&f's permissions!"
+			else:
+				add "Kick_Players" to {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fAdded &b""Kick_Players"" &fto &a%{_player}%&f's permissions!"
+		else if event-slot's name = "&cAdmin":
+			if {nationPermissions::%{_player}'s uuid%::*} contains "Admin":
+				remove "Admin" from {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fRemoved &b""Admin"" &ffrom &a%{_player}%&f's permissions!"
+			else:
+				add "Admin" to {nationPermissions::%{_player}'s uuid%::*}
+				nationOpenPlayerPermGUI(player, {_player})
+				send "{@prefix} &fAdded &b""Admin"" &fto &a%{_player}%&f's permissions!"
+			

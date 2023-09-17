@@ -1,0 +1,59 @@
+on right click:
+	if held item of player is end crystal named "&8Soulgolem Summoner":
+		set {_n} to nbt compound of held item of player
+		if nbt tag "soulgolem;active" of {_n} is true:
+			set nbt tag "soulgolem;active" of nbt compound of held item of player to false
+			send "&8&oYour Soulgolem was brought back from the world."
+			stop
+		if difference between now and nbt tag "soulgolem;time" of {_n} is more than 2 minutes:
+			set nbt tag "soulgolem;time" of nbt compound of held item of player to now
+			set item cooldown of held item of player to 2 minutes	
+			set nbt tag "soulgolem;active" of nbt compound of held item of player to true
+			spawn iron golem at location of player
+			set {_e} to last spawned iron golem
+			set max health of {_e} to 100
+			set display name of {_e} to "&8Soulgolem &7[&c100&8/&c100&7] &b30s"
+			heal {_e}
+			set walk speed of {_e} to 0.35
+			soulGolemParticles({_e})
+			soulGolemAttack({_e}, player)
+			soulGolemDeath({_e})
+			set nbt compound "soulgolem;despawn" of nbt compound of {_e} to 30
+			while {_e} is alive:
+				wait 1 second
+				set nbt compound "soulgolem;despawn" of nbt compound of {_e} to (nbt compound "soulgolem;despawn" of nbt compound of {_e} - 1)
+		else:
+			send "&cThis item is on cooldown."
+			
+on damage:
+	if victim is iron golem:
+		if display name of victim contains "&8Soulgolem":
+			set {_n} to nbt compound of victim
+			set {_time} to nbt tag "soulgolem;despawn" of {_n}
+			set display name of victim to "&8Soulgolem &7[&c%health of victim&8/&c100&7] &b%{_time}%s"
+			set walk speed of {_e} to 0.35
+			
+function soulGolemDeath(e: entity):
+	wait 30 seconds
+	kill {_e}
+	
+function soulGolemParticles(e: entity):
+	while {_e} is alive:
+		wait 1 tick
+		set {_v} to random number between -2 and 1
+		set {_hz} to random number between -1 and 1
+		set {_h} to random number between -1 and 1
+		set {_l} to location(x-coord of {_e} + {_h}, y-coord of {_e} + {_v}, z-coord of {_e} + {_hz})
+		lerp 0 of soul fire flame at {_l}
+	stop
+	
+function soulGolemAttack(e: entity, p: player):
+	while {_e} is alive:
+		wait 1 second
+		set path target of {_e} to nearest player in radius 20 of {_e} where [input is not {_p} and gamemode of input is not creative or spectator]
+	stop
+	
+on server stop:
+	loop all iron golems:
+		if uncolored name of iron golem contains "Soulgolem":
+			kill loop-entity

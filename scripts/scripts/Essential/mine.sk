@@ -1,0 +1,39 @@
+on item damage:
+	cancel event
+	
+on block break:
+	if player's gamemode is survival:
+		if {alrertInv::%player's uuid%} is true:
+			if player cannot hold event-item:
+				cancel event
+				send title "&cYour inventory is full!" with subtitle "&7To turn this off do /invalert"
+		if event-block is not pink glazed terracotta:
+			give player event-block
+		cancel drops
+		if player's world = world("ul_skymine2"):
+			chance of 0.1%:
+				execute console command "crate key give %player% common 1"
+			else if chance of 0.01%:
+				execute console command "crate key give %player% rare 1"
+			else if chance of 0.001%:
+				execute console command "crate key give %player% epic 1"
+			else if chance of 0.0001%:
+				execute console command "crate key give %player% legendary 1"
+		else:
+			if chance of 0.1%:
+				execute console command "crate key give %player% rare 1"
+			else if chance of 0.01%:
+				execute console command "crate key give %player% epic 1"
+			else if chance of 0.001%:
+				execute console command "crate key give %player% legendary 1"
+				
+				
+command inventoryalert:
+	aliases: invalert
+	trigger:
+		if {alrertInv::%player's uuid%} = true:
+			set {alrertInv::%player's uuid%} to false
+			send "&f[&3&lE&b&lZ&f] &7Your inventory alerts are now &cDisabled&7."
+		else:
+			set {alrertInv::%player's uuid%} to true
+			send "&f[&3&lE&b&lZ&f] &7Your inventory alerts are now &aEnabled&7."

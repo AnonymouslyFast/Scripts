@@ -1,0 +1,74 @@
+command clearchat:
+	permission: skript.clearchat
+	permission message: &cNo permission!
+	aliases: cc
+	trigger:
+		loop 50 times:
+			send "" to all players 
+		send "&d&l%player% &7Just clear the chat"
+		
+command staff [<string>]:
+	permission: skript.staffchat
+	permission message: &cNo permission!
+	aliases: sc
+	trigger:
+		if arg-1 is not set:
+			if {staffchat::%player's uuid%} is not true:
+				set {staffchat::%player's uuid%} to true
+				send "&6&lStaffChat &8&l>> &fTurned on."
+			else if {staffchat::%player's uuid%} is true:
+				set {staffchat::%player's uuid%} to false
+				send "&6&lStaffChat &8&l>> &fTurned off."
+		else:
+			send "&8&l[&6&lStaffChat&8&l] >> %player's prefix% &f| &f%player%: %arg-1%" to all players where [input has permission "skript.staffchat"]
+			
+on chat:
+	if {staffchat::%player's uuid%} is true:
+		cancel event
+		send "&8&l[&6&lStaffChat&8&l] >> %player's prefix% &f| &f%player%: %message%" to all players where [input has permission "skript.staffchat"]
+	else:
+		if message starts with "*":
+			player has permission "skript.staffchat"
+			cancel event
+			replace first "*" in message with ""
+			send "&8&l[&6&lStaffChat&8&l] >> %player's prefix% &f| &f%player%: %message%" to all players where [input has permission "skript.staffchat"]
+			
+		
+on join:
+	if {staffchat::%player's uuid%} is true:
+		send "&6&lStaffChat &8&l>> &fYour staff chat is still toggled on!"
+	
+		
+command vanish:
+	permission: skript.vanish
+	permission message: &cNo permission!
+	aliases: v
+	trigger:
+		if {invisable::%player's uuid%} is not true:
+			hide player from all players where [input does not have permission "skript.vanish"]
+			set {invisable::%player's uuid%} to true
+			while {invisable::%player's uuid%} is true:
+				send action bar "&3Vanished Activated." to player
+				wait 1 tick
+		else if {invisable::%player's uuid%} is true:
+			set {invisable::%player's uuid%} to false
+			reveal player to all players
+			send action bar "&3Vanished Deactivated." to player
+		
+command /mutechat:
+	permission: skript.mutechat
+	permission message: &cNo permission!
+	trigger:
+		if {mutechat} is not set:
+			set {mutechat} to true
+			broadcast "&cChat has been muted by %player%"
+		else:
+			delete {mutechat}
+			broadcast "&aChat has been unmuted by %player%"
+
+on chat:
+	if {mutechat} is true:
+		player does not have permission "skript.mutechat.bypass":
+			cancel event
+			send "&cYou cannot chat at this time!"
+			send "&c&lMUTECHAT &8- &f%player%: %message%" to all players where [input has permission "mutechat.listen"]

@@ -1,0 +1,44 @@
+command gmc [<player>]:
+	permission: gamemode.creative
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is not set:
+			set player's gamemode to creative 
+			send "&b&lEcoZero &8&l>> &fSet your gamemode to &dcreative&f!"
+		else if arg-1 is set:
+			if player has permission "gamemode.change":
+				set arg-1's gamemode to creative 
+				send "&b&lEcoZero &8&l>> &fSet your gamemode to &dcreative&f!" to arg-1
+				send "&b&lEcoZero &8&l>> &fSet %arg-1%'s gamemode to &dcreative&f!"
+			else:
+				send "&cNo permission!"
+		
+command gms [<player>]:
+	permission: gamemode.survival
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is not set:
+			set player's gamemode to survival 
+			send "&b&lEcoZero &8&l>> &fSet your gamemode to &dsurvival&f!"
+		else if arg-1 is set:
+			if player has permission "gamemode.change":
+				set arg-1's gamemode to survival 
+				send "&b&lEcoZero &8&l>> &fSet your gamemode to &dsurvival&f!" to arg-1
+				send "&b&lEcoZero &8&l>> &fSet %arg-1%'s gamemode to &dsurvival&f!" 
+			else:
+				send "&cNo permission!"
+		
+command gmsp [<player>]:
+	permission: gamemode.spectator
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is not set:
+			set player's gamemode to spectator 
+			send "&b&lEcoZero &8&l>> &fSet your gamemode to &dspectator&f!"
+		else if arg-1 is set:
+			if player has permission "gamemode.change":
+				set arg-1's gamemode to spectator 
+				send "&b&lEcoZero &8&l>> &fSet your gamemode to &dspectator&f!" to arg-1
+				send "&b&lEcoZero &8&l>> &fSet %arg-1%'s gamemode to &dspectator&f!" 
+			else:
+				send "&cNo permission!"

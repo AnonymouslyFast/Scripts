@@ -1,0 +1,23 @@
+function format(n: number) :: text:
+	set {_data} to "QT,18|Q,15|T,12|B,9|M,6|k,3"
+	loop split {_data} at "|":
+		set {_s::*} to split loop-value at ","
+		{_n} >= 10 ^ {_s::2} parsed as number
+		return "%{_n} / 10 ^ {_s::2} parsed as number%%{_s::1}%"
+	return "%{_n}%"
+
+command balancetop:
+	aliases: baltop, btop
+	trigger:
+		send "%nl%&a&lBalance Top"
+		set {_bal::*} to sorted indices of {balance::*} in descending order
+		set {_t} to 1
+		loop 100 times:
+			if {_t} <= 10:
+				set {_p} to {_bal::%loop-value%} parsed as a offline player
+				if {_p}.isOp() = false:
+					send "  &7↪ &3%{_t}%) &b%{_bal::%loop-value%} parsed as offline player%&8: &2&l$&a%format({balance::%{_bal::%loop-value%}%})%"
+					add 1 to {_t}
+			else:
+				stop loop
+		send ""

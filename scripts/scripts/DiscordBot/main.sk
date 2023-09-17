@@ -1,0 +1,4 @@
+on disky command:
+	if discord id of event-channel is not "1063623440457805824":
+		cancel event
+		post "wrong channel dumbo" to event-channel

@@ -1,0 +1,40 @@
+on join:
+	while player is online:
+		wait 15 minutes
+		player's gamemode is not creative
+		player has an oak sapling
+		loop all items in player's inventory where [uncolored name of input contains "Bonsai"]:
+			if checkForDead(loop-item) = true:
+				continue
+			set {_number} to random integer between 1 and 5
+			set {_n} to nbt compound of loop-item
+			set {_water} to int tag "bonsai;water" of {_n}
+			remove {_number} from {_water}
+			set int tag "bonsai;water" of nbt compound of loop-item to {_water}
+			if {_water} < 1:
+				set tag "bonsai;dead" of {_n} to true
+				set line 3 of lore of loop-item to "&7Water&8: &3None"
+				set line 1 of lore of loop-item to "&7&o*Died due to lack of water.*"
+				continue
+			set line 3 of lore of loop-item to "&7Water&8: &3%{_water}%%%"
+			continue
+			
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = oak sapling:
+			cancel event
+			if type of cursor slot of player = splash potions of water:
+				if player's gamemode is creative:
+					stop
+				else:
+					set {_n} to nbt compound of event-item
+					set {_water} to int tag "bonsai;water" of {_n}
+					if {_water} + 15 < 101:
+						add 15 to {_water}
+						set int tag "bonsai;water" of nbt compound of event-item to {_water}
+						set line 3 of lore of item to "&7Water&8: &3%{_water}%%%"
+						set cursor slot of player to air
+					else:
+						uncancel event
+			else:
+				uncancel event

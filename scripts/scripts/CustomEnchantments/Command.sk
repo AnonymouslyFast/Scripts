@@ -1,0 +1,71 @@
+options:
+	prefix: &3CustomEnchantments &8&l>>
+
+on load:
+	set {CustomEnchantmentList::*} to "remover", "explosion", "luck", "haste", "lightning", "lifesteal", "strength", "overlord"
+
+
+command customenchantments [<string>] [<string>] [<string>] [<string>] [<string>]:
+	aliases: ce, customenchants, customenchant
+	permission: enchants.command
+	trigger:
+		if arg-1 = "give":
+			set {_p} to "%arg-2%" parsed as player
+			set {_d::*} to all players
+			if {_d::*} contains {_p}:
+				if arg-3 is set:
+					if {CustomEnchantmentList::*} contains arg-3:
+						if arg-5 is set:
+							set {_amount} to arg-5 parsed as integer
+							if "%{_amount}%" != "<none>":
+								if arg-4 is set:
+									set {_lvl} to arg-4 parsed as integer
+									if "%{_lvl}%" != "<none>":
+										EnchantmentGive({_p}, arg-3, {_amount}, {_lvl})
+										send "{@prefix} &fGave &d%{_p}%&f %{_amount}% %arg-3% %{_lvl}% Books"
+									else:
+										send "{@prefix} &fPlease enter in a valid number!"
+							else:
+								send "{@prefix} &fPlease enter in a valid number!"
+						else:
+							if arg-4 is set:
+								set {_lvl} to arg-4 parsed as integer
+								if "%{_lvl}%" != "<none>":
+									EnchantmentGive({_p}, arg-3, 1, {_lvl})
+									send "{@prefix} &fGave &d%{_p}%&f 1 %arg-3% %{_lvl}% Book"
+								else:
+									send "{@prefix} &fPlease enter in a valid number!"
+							else:
+								send "{@prefix} &fPlease enter in a valid number!"
+					else:
+						send "{@prefix} &fPlease provide a valid Custom enchantment! If you need a list of the custom enchantments do /customenchantments list"
+				else:
+					send "{@prefix} &fPlease provide a Custom enchantment! If you need a list of the custom enchantments do /customenchantments list"
+			else:
+				send "{@prefix} &fThat player is not online or does not exist! You entered: &d%arg-2%"
+		else if arg-1 is "list":
+			send "%nl%&3&lCustom Enchantments List"
+			loop {CustomEnchantmentList::*}:
+				if loop-value = "remover":
+					send "  &8&l- %getEnchantmentName(loop-value)%"
+				else:
+					send "  &8&l- %getEnchantmentName(loop-value)% &d(Max LVL: 5)"
+			send ""
+		else:
+			send "{@prefix} &fPlease specify what you want! &d(list or give)"
+				
+				
+on tab complete of "/customenchantments" , "/ce", "/customenchant" and "/customenchants":
+	set tab completions for position 1 to "give" and "list"
+	if tab arg-1 = "give":
+		set tab completions for position 2 to all players
+		set tab completions for position 3 to {CustomEnchantmentList::*}
+		if tab arg-3 = "remover":
+			set tab completions for position 4 to "2", "6" and "64"	
+		else:
+			set tab completions for position 4 to "1", "2", "3", "4" and "5"
+			set tab completions for position 5 to "2", "6" and "64"
+	
+	
+					
+						

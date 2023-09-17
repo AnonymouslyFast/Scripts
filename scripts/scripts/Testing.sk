@@ -1,0 +1,274 @@
+options:
+  # Time to spend between each point in playback.
+  playback.time per point: 2 second
+
+  # Interpolation method.
+  # Options: hermite, catmullRom
+  playback.interpolation: catmullRom
+
+  # Hermite tension.
+  interpolation.hermite.tension: 0
+  
+
+  
+  
+function tut(player: player):
+	execute console command "scene play welcome %{_player}%"
+	send title "Welcome to &3&lEco&b&lZero" with subtitle "&7Look in chat for more info!" to {_player} for 3 seconds 
+	set {_t} to text component from "&a[Click to Continue]"
+	set {tutorial::%{_player}'s uuid%} to 1
+	send "&7[&3&lE&b&lZ&7] %nl%&7[&3&lE&b&lZ&7] &fThis server is a skymining server, You are now in a tutorial which will guide you on a amazing interactive journey! Do /discord to join our discord and join the community. anyway shall we start?%nl%&7[&3&lE&b&lZ&7] %{_t}%" to {_player}
+	on click on {_t}:
+		set {tutorial::%{_player}'s uuid%} to 2
+	while {tutorial::%{_player}'s uuid%} is 1: 
+		if {sceneON::%{_player}'s uuid%} is false:
+			execute console command "scene play welcome %{_player}%"
+			send title "Welcome to &3&lEco&b&lZero" with subtitle "&7Look in chat for more info!" to {_player} for 3 seconds 
+			send "&7[&3&lE&b&lZ&7] %nl%&7[&3&lE&b&lZ&7] &fThis server is a skymining server, You are now in a tutorial which will guide you on a amazing interactive journey! Do /discord to join our discord and join the community. anyway shall we start?%nl%&7[&3&lE&b&lZ&7]%nl%&7[&3&lE&b&lZ&7] %{_t}%" to {_player}
+		wait 1 tick
+	{tutorial::%{_player}'s uuid%} is 2
+	send "e" to {_player}
+			
+	
+
+on script load:
+  if ("hermite" and "catmullRom") doesn't contain "{@playback.interpolation}":
+    log "&cInterpolation must be hermite or catmullRom, but got {@playback.interpolation}!"
+    if {@interpolation.hermite.tension} is between -1 and 1:
+      log "&cTension must be between -1 and 1, but got {@interpolation.hermite.tension}!"
+
+function hermite1(y0: number, y1: number, y2: number, y3: number, mu: number) :: number:
+  set {_tension} to {@interpolation.hermite.tension}
+  set {_bias} to 0
+  set {_m0} to ({_y1} - {_y0}) * (1 + {_bias}) * (1 - {_tension}) / 2
+  add          ({_y2} - {_y1}) * (1 - {_bias}) * (1 - {_tension}) / 2 to {_m0}
+  set {_m1} to ({_y2} - {_y1}) * (1 + {_bias}) * (1 - {_tension}) / 2
+  add          ({_y3} - {_y2}) * (1 - {_bias}) * (1 - {_tension}) / 2 to {_m1}
+
+  set {_a0} to  2 * {_mu}^3 - 3 * {_mu}^2 + 1
+  set {_a1} to      {_mu}^3 - 2 * {_mu}^2 + {_mu}
+  set {_a2} to      {_mu}^3 - 1 * {_mu}^2
+  set {_a3} to -2 * {_mu}^3 + 3 * {_mu}^2
+
+  return {_a0} * {_y1} + {_a1} * {_m0} + {_a2} * {_m1} + {_a3} * {_y2}
+
+function catmullRom1(y0: number, y1: number, y2: number, y3: number, mu: number) :: number:
+   set {_a0} to -0.5*{_y0} + 1.5*{_y1} - 1.5*{_y2} + 0.5*{_y3}
+   set {_a1} to {_y0} - 2.5*{_y1} + 2*{_y2} - 0.5*{_y3}
+   set {_a2} to -0.5*{_y0} + 0.5*{_y2}
+   set {_a3} to {_y1}
+
+   return {_a0} * {_mu} * {_mu}^2 + {_a1} * {_mu}^2 + {_a2} * {_mu} + {_a3}
+
+on left-click with debug stick:
+  # for some reason dropping an item causes the left click event to fire?
+  metadata "stick.dropping" of player isn't set
+  name of tool ends with "&fScene Builder"
+  cancel event
+  set {_line} to uncoloured line 1 of tool's lore
+  set {_id} to subtext of {_line} from index 2 to (length of {_line})
+  add location of player to {scene.scenes::%{_id}%::points::*}
+  send action bar "&fAdded point %size of {scene.scenes::%{_id}%::points::*}% to scene." to player
+  play sound "block.note_block.pling" at pitch 2 for player
+
+on right-click with debug stick:
+  name of tool ends with "&fScene Builder"
+  cancel event
+  set {_line} to uncoloured line 1 of tool's lore
+  set {_id} to subtext of {_line} from index 2 to (length of {_line})
+  if size of {scene.scenes::%{_id}%::points::*} > 0:
+    set {scene.scenes::%{_id}%::points::*} to splice({scene.scenes::%{_id}%::points::*}, size of {scene.scenes::%{_id}%::points::*})
+    send action bar "&fRemoved point %size of {scene.scenes::%{_id}%::points::*} + 1% from scene." to player
+    play sound "block.note_block.pling" at pitch 1.5 for player
+  else if indices of {scene.scenes::*} contains {_id}:
+    delete {scene.scenes::%{_id}%::points::*}
+    delete {scene.scenes::%{_id}%::*}
+    send action bar "&cDeleted scene &f%{_id}%&c." to player
+    remove tool from tool
+    play sound "block.anvil.land" at volume 0.5 and pitch 1 for player
+  
+on drop of debug stick:
+  set metadata "stick.dropping" of player to true
+  name of item ends with "&fScene Builder"
+  cancel event
+  
+  set {_line} to uncoloured line 1 of item's lore
+  set {_id} to subtext of {_line} from index 2 to (length of {_line})
+  
+  play sound "block.note_block.chime" at pitch 0 for player
+  scene_playScene(player, {_id})
+  wait 2 ticks
+  delete metadata "stick.dropping" of player
+  
+on sneak toggle:
+	if {sceneON::%player's uuid%} is true:
+		cancel event
+
+command /scene [<action: text>] [<text>] [<text>]:
+  permission: scene
+  permission message: &cNo Permission
+  trigger:
+    if {_action} is "build":
+      if arg-2 isn't set:
+        send "&cYou must specify the name of the scene to build."
+        stop
+
+      give debug stick named "&fScene Builder" with lore "&7##%arg-2%" and "&a- Left-click to add points." and "&c- Right-click to remove them." and "&5- Drop to play scene." to player
+      stop
+    if {_action} is "list":
+      if arg-2 is set:
+        if indices of {scene.scenes::*} doesn't contain arg-2:
+          send "&cA scene by that name doesn't exist!"
+          stop
+        
+        send "&aList of points for scene &f%arg-2%&a:"
+        send "&7 - None!" if size of {scene.scenes::%arg-2%::points::*} is 0 
+        loop {scene.scenes::%arg-2%::points::*}:
+          send "&7 - &f%loop-index%. %rounded x-pos of loop-value% %rounded y-pos of loop-value% %rounded z-pos of loop-value%"
+        stop
+
+      send "&aList of all scenes:"
+      send "&7 - None!" if (size of indices of {scene.scenes::*}) is 0
+      loop indices of {scene.scenes::*}:
+        set {_size} to size of {scene.scenes::%loop-value%::points::*}
+        send "&7    - &f%loop-value%&a with &f%{_size}%&a points."
+      stop
+    if {_action} is "play":
+      if arg-2 isn't set:
+        send "&cYou must specify the name of the scene."
+        stop
+
+      if indices of {scene.scenes::*} doesn't contain arg-2:
+        send "&cA scene by that name doesn't exist!"
+        stop
+      if arg-3 is not set:
+        scene_playScene(player, arg-2)
+      else if arg-3 is set:
+        set {_target} to arg-3 parsed as player
+        if {_target} is set:
+          scene_playScene({_target}, arg-2)
+        else:
+          send "&cPlease use a valid player!" 
+      stop
+    send "&aHelp for &f/scene:"
+    send "&7 - &f/scene build <name>"
+    send "&7 ... Gives you the Scene Builder tool for the given scene."
+    send "&7 - &f/scene play <name>"
+    send "&7 ... Plays the scene with the given name."
+    send "&7 - &f/scene list"
+    send "&7 ... Lists all available scenes."
+    send "&7 - &f/scene list <name>"
+    send "&7 ... Lists all the points in the scene with the given name."
+
+function scene_playScene(target: player, id: text):
+  set {sceneON::%{_target}'s uuid%} to true
+  set {_hash} to unix timestamp of now
+  set metadata "scene.playback.hash" of {_target} to {_hash}
+  wait 2 ticks # Wait for the old one to abort
+  set {_points::*} to {scene.scenes::%{_id}%::points::*}
+      
+  set {_start} to {_points::1} ~ (vector between {_points::2} and {_points::1})
+  set {_end} to (last element of {_points::*}) ~ (vector between ({_points::%size of {_points::*}-1%}) and last element of {_points::*})
+
+  set {_previous gamemode} to gamemode of {_target}
+  set {_previous location} to location of {_target}
+  set {_previous target} to spectator target of {_target}
+  delete spectator target of {_target}
+  set gamemode of {_target} to spectator
+
+  spawn an armor stand at {_points::1}
+  set {_stand} to last spawned armor stand
+  set gravity of {_stand} to off
+  {_stand}.setVisible(false)
+  make {_stand} Invulnerable
+  teleport {_target} to {_stand}
+  wait 2 ticks
+
+  set spectator target of {_target} to {_stand}
+
+  loop (size of {_points::*} - 1) times:
+    set {_p0} to {_points::%(loop-number) - 1%} if loop-number > 1, else {_start} 
+    set {_p1} to {_points::%(loop-number) + 0%}
+    set {_p2} to {_points::%(loop-number) + 1%}
+    set {_p3} to {_points::%(loop-number) + 2%} if loop-number < (size of {_points::*} - 1), else {_end}
+
+    set yaw of {_p0} to yaw of {_p0}
+    set yaw of {_p1} to nearestIdenticalYaw((yaw of {_p1}), yaw of {_p2})
+    set yaw of {_p2} to nearestIdenticalYaw((yaw of {_p2}), yaw of {_p1})
+    set yaw of {_p3} to yaw of {_p3}
+
+    set {_step} to 1 / toTicks({@playback.time per point})
+    set {_mu} to 0
+    while {_mu} < 1:
+      add {_step} to {_mu}
+
+      set {_point} to interpolate({_p0}, {_p1}, {_p2}, {_p3}, {_mu})
+
+      teleport {_stand} to {_point}
+      exit 2 loops if metadata "scene.playback.hash" of {_target} isn't {_hash}
+      wait a tick
+  kill {_stand}
+  set gamemode of {_target} to {_previous gamemode}
+  set {sceneON::%{_target}'s uuid%} to false
+  teleport {_target} to {_previous location}
+  set spectator target of {_target} to {_previous target}
+  
+ 
+
+function interpolate(p0: location, p1: location, p2: location, p3: location, mu: number) :: location:
+  set {_x0} to x-pos of {_p0}
+  set {_y0} to y-pos of {_p0}
+  set {_z0} to z-pos of {_p0}
+
+  set {_yaw0} to yaw of {_p0}
+  set {_pitch0} to pitch of {_p0}
+
+  set {_x1} to x-pos of {_p1}
+  set {_y1} to y-pos of {_p1}
+  set {_z1} to z-pos of {_p1}
+
+  set {_yaw1} to yaw of {_p1}
+  set {_pitch1} to pitch of {_p1}
+
+  set {_x2} to x-pos of {_p2}
+  set {_y2} to y-pos of {_p2}
+  set {_z2} to z-pos of {_p2}
+  
+  set {_yaw2} to yaw of {_p2}
+  set {_pitch2} to pitch of {_p2}
+
+  set {_x3} to x-pos of {_p3}
+  set {_y3} to y-pos of {_p3}
+  set {_z3} to z-pos of {_p3}
+
+  set {_yaw3} to yaw of {_p3}
+  set {_pitch3} to pitch of {_p3}
+
+  set {_rx} to {@playback.interpolation}1({_x0}, {_x1}, {_x2}, {_x3}, {_mu})
+  set {_ry} to {@playback.interpolation}1({_y0}, {_y1}, {_y2}, {_y3}, {_mu})
+  set {_rz} to {@playback.interpolation}1({_z0}, {_z1}, {_z2}, {_z3}, {_mu})
+  set {_ryaw} to {@playback.interpolation}1({_yaw0}, {_yaw1}, {_yaw2}, {_yaw3}, {_mu})
+  set {_rpitch} to {@playback.interpolation}1({_pitch0}, {_pitch1}, {_pitch2}, {_pitch3}, {_mu})
+
+  set {_loc} to location at {_rx}, {_ry}, {_rz} in (world of {_p0})
+  set yaw of {_loc} to {_ryaw}
+  set pitch of {_loc} to {_rpitch}
+  return {_loc}
+
+function toTicks(span: timespan) :: number:
+  return (unix timestamp of ({_span} after (unix date of 0))) * 20
+
+function nearestIdenticalYaw(current: number, target: number) :: number:
+  if abs({_target} - {_current}) > 180:
+    set {_direction} to {_target} - {_current}
+    set {_norm} to {_direction} / abs({_direction})
+    return {_current} + {_norm} * 360
+  return {_current}
+
+function splice(l: objects, i: integer) :: objects:
+  set {_c} to 1
+  loop integers from {_c} to size of {_l::*}:
+    if {_c} != {_i}:
+      add {_c}th element of {_l::*} to {_r::*}
+    add 1 to {_c}
+  return {_r::*}

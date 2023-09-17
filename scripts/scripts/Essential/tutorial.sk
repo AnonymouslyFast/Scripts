@@ -1,0 +1,118 @@
+options:
+	prefix: &f[&3&lE&b&lZ&f]
+	
+	
+	
+import:
+	com.nisovin.shopkeepers.api.events.ShopkeeperTradeEvent
+
+
+
+function startTutorial(player: player):
+	set {tutorial::%{_player}'s uuid%} to true
+	set {_player}'s gamemode to spectator
+	send title "&aTutorial Started" with subtitle "&7You cannot skip this." to {_player}
+	teleport {_player} to {tutorialLoc1}
+	set {_player}'s gamemode to survival
+	send " " to {_player}
+	send "{@prefix} &7This is the first mine, please mine &f16 &dOak Logs &7to progress." to {_player}
+	send " " to {_player}
+	set {tutorialPart::%{_player}'s uuid%} to 1
+	{tutorial::%{_player}'s uuid%} = true
+	while {tutorialPart::%{_player}'s uuid%} is 1:
+		wait 1 tick 
+		{tutorial::%{_player}'s uuid%} = true
+		add 1 to {_e}
+		if {_e} = 300:
+			send "{@prefix} &7This is the first mine, please mine &f16 &dOak Logs &7to progress." to {_player}
+			clear {_e}
+	{tutorial::%{_player}'s uuid%} = true
+	send title "&aCompleted!" to {_player}
+	wait 1 second 
+	set {_player}'s gamemode to spectator
+	teleport {_player} to {tutorialLoc2}
+	send " " to {_player}
+	send "{@prefix} &7This is the traders, this is where you will come and get better tools by trading items you mine. You can also do &d/warp traders &7to fast travel here." to {_player}
+	send " " to {_player}
+	wait 4 seconds
+	teleport {_player} to {tutorialLoc3}
+	wait 3 seconds
+	teleport {_player} to {tutorialLoc4}
+	set {_player}'s gamemode to survival
+	send " " to {_player}
+	send "{@prefix} &7Please trade the &f16 &dOak Logs &7for a better axe." to {_player}
+	send " " to {_player}
+	set {tutorialPart::%{_player}'s uuid%} to 4
+	while {tutorialPart::%{_player}'s uuid%} = 4:
+		wait 1 tick 
+		{tutorial::%{_player}'s uuid%} = true
+		add 1 to {_e}
+		if {_e} = 250:
+			send " " to {_player}
+			send "{@prefix} &7Please trade the &f16 &dOak Logs &7for a better axe." to {_player}
+			send " " to {_player}
+			clear {_e}
+	send title "&aCompleted!" to {_player}
+	wait 1 second 
+	teleport {_player} to {spawn}
+	set {tutorial::%{_player}'s uuid%} to false
+	clear {tutorialPart::%uuid of {_player}%}
+	send " " to {_player}
+	send "{@prefix} &aTUTORIAL COMPLETED &7If you need more help join our discord by doing &d/discord &7or do &d/faq" to {_player}
+	send " " to {_player}
+	set {_player}'s gamemode to survival
+
+
+
+#First step of tutorial event
+on block break:
+	event-block = oak log
+	if {tutorialPart::%player's uuid%} is 1:
+		add 1 to {tut::%player's uuid%}
+		if {tut::%player's uuid%} = 16:
+			clear {tut::%player's uuid%}
+			set {tutorialPart::%player's uuid%} to 2
+			
+
+
+
+#Trade event to see if they completed last step of tutorial
+on ShopkeeperTradeEvent:
+	set {_p} to event.getPlayer()
+	if {tutorialPart::%uuid of {_p}%} = 4:
+		set {tutorialPart::%uuid of {_p}%} to 5
+
+
+
+
+#Disables moving around if they're in spec mode
+on player step:
+	if {tutorial::%player's uuid%} is true:	
+		player's gamemode is spectator
+		cancel event
+		send "&cYou may not move right now."
+	
+
+
+#Stop tutoiral Function			
+function stopTutorial(player: player):
+	set {tutorial::%{_player}'s uuid%} to false
+	clear {tutorialPart::%uuid of {_player}%}
+	send " " to {_player}
+	send "{@prefix} &aTUTORIAL COMPLETED &7If you need more help join our discord by doing &d/discord &7or do &d/faq" to {_player}
+	send " " to {_player}
+	set {_player}'s gamemode to survival
+	teleport {_player} to {spawn}
+
+
+
+#Stops the tutorial of the player if they leave
+on quit:
+	if {tutorial::%player's uuid%} = true:
+		stopTutorial(player)
+		
+	
+	
+	
+	
+	

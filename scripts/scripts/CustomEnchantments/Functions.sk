@@ -1,0 +1,118 @@
+function EnchantmentGive(p: player, enchant: string, amount: integer, lvl: integer):
+	if {_enchant} = "remover":
+		set {_i} to {_amount} of glow ink sac named "%getEnchantmentName({_enchant})%" with lore getLore({_enchant})
+		set tag "enchants" of nbt of {_i} to "%{_enchant}%:1}"
+		give {_i} to {_p} 
+	else:
+		set {_i} to {_amount} of enchanted book named "%getEnchantmentName({_enchant})% %{_lvl}%" with lore getLore({_enchant})
+		set tag "enchants" of nbt of {_i} to "%{_enchant}%:%{_lvl}%}"
+		give {_i} to {_p} 
+	
+	
+function getLore(enchant: string) :: string:
+	if {_enchant} = "explosion":
+		return "%nl%&c&lExplosion &7has a chance to break blocks%nl%&7like tnt does while you mine.%nl%&7You will be given the broken blocks.%nl%%nl%&d&lDrag & Drop onto Pickaxes or Axes."
+	else if {_enchant} = "luck":
+		return "%nl%&6&lLuck &7has a chance to give you extra blocks%nl%&7while mining. The chance of this will incresse%nl%&7by upgrade.%nl%%nl%&d&lDrag & Drop onto Pickaxes or Axes."
+	else if {_enchant} = "haste":
+		return "%nl%&3&lHaste &7this enchant gives you haste,%nl%&7the number of that haste is dependant%nl%&7on the enchant number. This will give you%nl%&7haste when you have the tool in your hand. %nl%%nl%&d&lDrag & Drop onto Pickaxes or Axes."
+	else if {_enchant} = "lightning":
+		return "%nl%&b&lLightning &7has a chance to strike lightning%nl%&7at your opponent. This will only happend%nl%&7if your opponent is a player.%nl%%nl%&d&lDrag & Drop onto Swords or Axes"
+	else if {_enchant} = "lifesteal":
+		return "%nl%&9&lLifeSteal &7has a chance to damage your opponent%nl%&7by 1 and heal you by 1 heart. Your opponent has%nl%&7to be a player to work.%nl%%nl%&d&lDrag & Drop on Swords or Axes"
+	else if {_enchant} = "remover":
+		return "%nl%&f&lEnchant Remover &7removes 1 custom enchant%nl%&7of a item at once, and gives you back the book copy of the enchant. %nl%%nl%&d&lDrag & Drop onto any item."
+	else if {_enchant} = "strength":
+		return "&4&lStrength &7has a chance to give you%nl%&7double the damage you're conflicting%nl%&7on your opponent. %nl%%nl%&d&lDrag & Drop onto Swords or Axes"
+	else if {_enchant} = "overlord":
+		return "&9&lOverLord &7gives you more 2%nl%&7more hearts per enchant level. %nl%%nl%&d&lDrag & Drop onto any chestplate"
+		
+		
+		
+	
+	
+	
+function getEnchantmentName(enchant: string) :: string:
+	if {_enchant} = "explosion":
+		return "&c&lExplosion"
+	else if {_enchant} = "luck":
+		return "&6&lLuck"
+	else if {_enchant} = "haste":
+		return "&3&lHaste"
+	else if {_enchant} = "lightning":
+		return "&b&lLightning"
+	else if {_enchant} = "lifesteal":
+		return "&9&lLifeSteal"
+	else if {_enchant} = "remover":
+		return "&f&lEnchant Remover"
+	else if {_enchant} = "strength":
+		return "&4&lStrength"
+	else if {_enchant} = "overlord":
+		return "&9&lOverLord"
+	
+
+function getlvl(tool: item, enchant: string) :: integer:
+	set {_enchant::*} to tag "enchants" of nbt compound of {_tool}
+	if "%{_enchant::*}%" contains "%{_enchant}%:1}":
+		return 1
+	else if "%{_enchant::*}%" contains "%{_enchant}%:2}":
+		return 2
+	else if "%{_enchant::*}%" contains "%{_enchant}%:3}":
+		return 3
+	else if "%{_enchant::*}%" contains "%{_enchant}%:4}":
+		return 4
+	else if "%{_enchant::*}%" contains "%{_enchant}%:5}":
+		return 5
+	else if "%{_enchant::*}%" contains "%{_enchant}%:69}":
+		return 69
+		
+function removeEnchant(p: player, enchant: string, tool: item) :: item:
+	set {_tag} to nbt compound of {_tool}
+	set {_return} to {_tool}
+	set {_enchants::*} to tag "enchants" of {_tag}
+	loop {_enchants::*}:
+		if "%loop-value%" = "{%{_enchant}%:%getlvl({_tool}, {_enchant})%}":
+			remove loop-value from {_enchants::*}
+			
+	set {_l::*} to lore of {_return}
+	remove "%getEnchantmentName({_enchant})% %getlvl({_return}, {_enchant})%" from {_l::*}	
+	set lore of {_return} to {_l::*}
+	set compound list tag "enchants" of nbt of {_return} to {_enchants::*}
+	return {_return}
+			
+		
+		
+	
+function applyEnchant(tool: item, p: player, enchant: string, lvl: integer) :: item:
+	set {_tag} to nbt compound of {_tool}
+	set {_enchants::*} to tag "enchants" of {_tag}
+	set {_return} to {_tool}
+	if "%{_enchants::*}%" does not contain "{%{_enchant}%:1}" or "{%{_enchant}%:2}" or "{%{_enchant}%:3}" or "{%{_enchant}%:4}" or "{%{_enchant}%:5}" or "{%{_enchant}%:69}":
+		if {_enchants::*} is set:
+			set {_e} to nbt compound from "{%{_enchant}%:%{_lvl}%}"
+			add {_e} to {_enchants::*}
+			set compound list tag "enchants" of nbt compound of {_return} to {_enchants::*}
+			add "%getEnchantmentName({_enchant})% %getlvl({_return}, {_enchant})%" to lore of {_return}
+			log "Applied %{_enchant}% %{_lvl}% to item of %{_p}%!" to "enchants.log"
+					
+		else:
+			set {_e} to nbt compound from "{%{_enchant}%:%{_lvl}%}"
+			set {_enchants::*} to {_e}
+			set compound tag "enchants" of nbt of {_return} to {_enchants::*}
+			add "%getEnchantmentName({_enchant})% %getlvl({_return}, {_enchant})%" to lore of {_return}
+			log "Applied %{_enchant}% %{_lvl}% to item of %{_p}%!" to "enchants.log"
+			
+	else:
+		loop {_enchants::*}:
+			if "%loop-value%" = "{%{_enchant}%:%getlvl({_tool}, {_enchant})%}":
+				remove loop-value from {_enchants::*}
+				
+		set {_e} to nbt compound from "{%{_enchant}%:%{_lvl}%}"
+		add {_e} to {_enchants::*}
+		set {_l::*} to lore of {_return}
+		remove "%getEnchantmentName({_enchant})% %getlvl({_return}, {_enchant})%" from {_l::*}			
+		set compound list tag "enchants" of nbt of {_return} to {_enchants::*}
+		add "%getEnchantmentName({_enchant})% %{_lvl}%" to {_l::*}
+		set lore of {_return} to {_l::*}
+		log "Applied %{_enchant}% %{_lvl}% to item of %{_p}%!" to "enchants.log"
+	return {_return}

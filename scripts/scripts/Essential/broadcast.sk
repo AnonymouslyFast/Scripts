@@ -1,0 +1,11 @@
+command broadcast [<string>]:
+	permission: broadcast.send
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			broadcast "%nl%&7=======[ &3&lEco&b&lZero &7]=======%nl%"
+			broadcast arg-1
+			broadcast "%nl%&7=======[ &3&lEco&b&lZero &7]=======%nl%"
+		else:
+			send "&cPlease put a message to be broadcasted!"
+	

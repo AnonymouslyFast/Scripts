@@ -1,0 +1,97 @@
+function spawnOWB(loc: location):
+	clear {OWBD::*}
+	spawn a adult zombie at {_loc}
+	set {boss1} to last spawned zombie
+	set last spawned zombie's max health to 150
+	set name of last spawned zombie to "&c&lKing Zombie &a(150/150)"
+	apply swiftness 2 to last spawned zombie for 9999 hours
+	apply jump boost 2 to last spawned zombie for 9999 hours
+	heal last spawned zombie
+	equip last spawned zombie with 1 of unbreakable gold helmet of protection 4
+	equip last spawned zombie with 1 of unbreakable iron chestplate of protection 4
+	equip last spawned zombie with 1 of unbreakable chainmail leggings of protection 4
+	equip last spawned zombie with 1 of unbreakable gold boots of protection 4
+	set tool of last spawned zombie to 1 of unbreakable diamond sword of sharpness 4, fire aspect
+	set {Boss::Overworld} to true
+	
+on damage:
+	if attacker or victim's name contains "&c&lKing Zombie":
+		if victim's name contains "&c&lKing Zombie":
+			if {OWBD::%attacker%} is not set:
+				set {OWBD::%attacker%} to final damage 
+			else:
+				add final damage to {OWBD::%attacker%}
+			if "%region at attacker%" contains "boss1":
+				if block below attacker is not a jungle slab:
+					set victim's display name to "&c&lKing Zombie &a(%health of victim%/%max health of victim%)"
+				else:
+					cancel event
+					send "&cYou cannot attack the boss here!" to attacker	
+			else:
+				cancel event
+				send "&cYou cannot attack the boss here!" to attacker
+		if attacker's name contains "&c&lKing Zombie":
+			set {_r} to random integer between 1 and 100
+			if {_r} is between 1 and 10:
+				strike lightning effect at attacker
+				send "&c&lKing Zombie &8&l>> &fArise my &dMINIONS&f!" to all players where [region at input contains "boss1" parsed as region]
+				kill all baby zombies
+				loop (random number between 5 and 10) times:
+					spawn baby zombie at attacker
+					set tool of last spawned baby zombie to gold sword of sharpness 2
+					set max health of last spawned baby zombie to 15
+			else if {_r} is between 10 and 20:
+				push victim upwards 
+				push victim east 
+			else if {_r} is between 20 and 25:
+				apply blindness to victim for 2 seconds
+				apply levitation to attacker and victim for 4 seconds
+				send "&c&lKing Zombie &8&l>> &fYou shall not kill me!" to all players where [region at input contains "boss1" parsed as region]
+				
+on entity knockback:
+	entity = {boss1}
+	cancel event
+				
+on death:
+	if victim is not a player:
+		cancel drops
+		if victim's name contains "&c&lKing Zombie":
+			loop {OWBD::*}:
+				if {OWBD::%loop-index%} = max({OWBD::*}):
+					set {Boss::Overworld} to false
+					clear {boss1}
+					set {_chance} to a random number between 1 and 100
+					if {_chance} is between 1 and 50:
+						give random number between 1 and 3 of green dye named "&2&lZombie Flesh" to loop-index parsed as player
+					else if {_chance} is between 51 and 100:
+						give random number between 1 and 3 of fermented spider eye named "&2&lZombie Brains" to loop-index parsed as player					
+			clear {OWBD::*}
+				
+				
+on stop:
+	kill {boss1}
+	
+on skript enable:
+	wait 5 ticks
+	kill all zombies
+	clear {boss1}
+	spawnOWB(location(0, 76, 104, world("ul_skymine2")))
+
+on region leave:
+	if event-entity's name contains "&c&lKing Zombie":
+		if event-region = "owbborder" parsed as region:
+			teleport event-entity to location(0, 76, 104, world("ul_skymine2"))
+		
+every 2.5 minutes:
+	if {boss1} is not set:
+		spawnOWB(location(0, 76, 104, world("ul_skymine2")))
+		send "&c&lKing Zombie &8&l>> &fI'm &dBACK&f!!" to all players where [region at input contains "boss1" parsed as region]
+		
+
+
+		
+				
+
+			
+	
+	

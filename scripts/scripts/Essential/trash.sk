@@ -1,0 +1,4 @@
+command trash:
+	trigger:
+		set {_gui} to chest inventory with 5 rows named "&3&lE&b&lZ &9&lTrash"
+		open {_gui} to player

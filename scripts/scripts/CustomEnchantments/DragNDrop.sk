@@ -1,0 +1,214 @@
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any pickaxe or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "explosion"
+					if getlvl(event-item, "explosion") is set:
+						if getlvl({_book}, "explosion") > getlvl(event-item, "explosion"):
+							set clicked slot to applyEnchant(event-item, player, "explosion", getlvl({_book}, "explosion"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "explosion", getlvl({_book}, "explosion"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+				
+				
+#Luck
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any pickaxe or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "luck"
+					if getlvl(event-item, "luck") is set:
+						if getlvl({_book}, "luck") > getlvl(event-item, "luck"):
+							set clicked slot to applyEnchant(event-item, player, "luck", getlvl({_book}, "luck"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "luck", getlvl({_book}, "luck"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+				
+#Haste
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any pickaxe or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "haste"
+					if getlvl(event-item, "haste") is set:
+						if getlvl({_book}, "haste") > getlvl(event-item, "haste"):
+							set clicked slot to applyEnchant(event-item, player, "haste", getlvl({_book}, "haste"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "haste", getlvl({_book}, "haste"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+#Lightning
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any sword or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "lightning"
+					if getlvl(event-item, "lightning") is set:
+						if getlvl({_book}, "lightning") > getlvl(event-item, "lightning"):
+							set clicked slot to applyEnchant(event-item, player, "lightning", getlvl({_book}, "lightning"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "lightning", getlvl({_book}, "lightning"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+				
+				
+#lifesteal
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any sword or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "lifesteal"
+					if getlvl(event-item, "lifesteal") is set:
+						if getlvl({_book}, "lifesteal") > getlvl(event-item, "lifesteal"):
+							set clicked slot to applyEnchant(event-item, player, "lifesteal", getlvl({_book}, "lifesteal"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "lifesteal", getlvl({_book}, "lifesteal"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+#Enchantment Remover
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any sword or any tool or any armor:
+			cancel event
+			set {_e} to cursor slot of player
+			if {_e} = glow ink sac:
+				if player's gamemode is creative:
+					send "You cannot do this in creative! Please get into Survival"
+					close player's inventory
+					uncancel event
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "remover"
+					set {_enchants::*} to tag "enchants" of nbt compound of event-item
+					if {_enchants::*} is set:
+						set {_e::*} to "%{_enchants::1}%" split at ":"
+						set {_e1} to "%{_e::1}%"
+						set {_e2::*} to {_e1} split at "{" 
+						set {_e} to "%{_e2::2}%"
+						set {_lvl} to getlvl(event-item, "%{_e}%")
+						set clicked slot to removeEnchant(player, "%{_e}%", event-item)
+						EnchantmentGive(player, "%{_e}%", 1, {_lvl})
+						remove 1 of {_book} from cursor slot of player
+					else:
+						uncancel event
+						send "&c&lYou cannot apply the &fEnchant Remover &c&lto this item."
+			else:
+				uncancel event
+				
+				
+				
+#Strength
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any sword or any axe:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "strength"
+					if getlvl(event-item, "strength") is set:
+						if getlvl({_book}, "strength") > getlvl(event-item, "strength"):
+							set clicked slot to applyEnchant(event-item, player, "strength", getlvl({_book}, "strength"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "strength", getlvl({_book}, "strength"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+				
+				
+				
+#overlord
+on inventory click:
+	if event-inventory = player's inventory:
+		if type of event-item = any chestplate:
+			cancel event
+			if type of cursor slot of player = enchanted book:
+				if player's gamemode is creative:
+					send title "You cannot do this in creative!" with subtitle "Please get into Survival"
+					close player's inventory
+				else:
+					set {_book} to cursor slot of player
+					tag "enchants" of nbt of {_book} contains "overlord"
+					if getlvl(event-item, "overlord") is set:
+						if getlvl({_book}, "overlord") > getlvl(event-item, "overlord"):
+							set clicked slot to applyEnchant(event-item, player, "overlord", getlvl({_book}, "overlord"))
+							set cursor slot of player to air
+						else:
+							uncancel event
+					else:
+						set clicked slot to applyEnchant(event-item, player, "overlord", getlvl({_book}, "overlord"))
+						set cursor slot of player to air
+			else:
+				uncancel event
+					
+					
+			
+			

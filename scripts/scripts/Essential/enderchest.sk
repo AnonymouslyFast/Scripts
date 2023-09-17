@@ -1,0 +1,10 @@
+command enderchest [<player>]:
+	aliases: ec, echest
+	trigger:
+		if arg-1 is not set:
+			open player's ender chest to player
+		else:
+			if player has permission "ender.see":
+				open arg-1's ender chest to player
+			else:
+				send "&cNo permission"

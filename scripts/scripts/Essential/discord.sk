@@ -1,0 +1,3 @@
+command discord:
+	trigger:
+		send "<link:https://discord.gg/CzhXXSefFj>&dClick Here to join our discord server!"

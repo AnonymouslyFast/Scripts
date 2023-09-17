@@ -1,0 +1,51 @@
+function spawnNetherBoss(l: location):
+	spawn a wither skeleton at {_l}
+	set {boss2} to last spawned wither skeleton
+	set max health of last spawned wither skeleton to 250
+	heal last spawned wither skeleton
+	set display name of last spawned wither skeleton to "&4&lNether King &a(250/250)"
+	apply potion of speed of tier 2 without any particles to last spawned wither skeleton for 9999 hours
+	set tool of last spawned wither skeleton to netherite sword of sharpness 15, fire aspect
+	set chestplate of last spawned wither skeleton to netherite chestplate of protection 10
+	
+	
+function createRing(l: location, t: text):
+	if {_t} is "green":
+		loop 180 times:
+			set {_v} to cylindrical vector radius 4, yaw (loop-value * 2), height 0.1
+			lerp 0 of happy villager at {_l}  ~ {_v}
+	if {_t} is "yellow":
+		loop 180 times:
+			set {_v} to cylindrical vector radius 4, yaw (loop-value * 2), height 0.1
+			lerp 0 of dust using dustOption(yellow, 1) at {_l}  ~ {_v}
+	if {_t} is "red":
+		loop 180 times:
+			set {_v} to cylindrical vector radius 4, yaw (loop-value * 2), height 0.1
+			lerp 0 of dust using dustOption(red, 2) at {_l}  ~ {_v}
+			
+on stop:
+	kill {boss2}
+	
+on death:
+	if victim is {boss2}:
+		cancel drops
+	
+on damage:
+	if victim is {boss2}:
+		set display name of victim to "&4&lNether King &a(%health of victim%/%max health of victim%)"
+		if {boss2::rings} is not true:
+			chance of 10%:
+				bossRings(victim)
+			
+function bossRings(l: location):
+	set {boss2::rings} to true
+	createRing({_l}, "green")
+	wait 1 second
+	createRing({_l}, "yellow")
+	wait 1 second
+	createRing({_l}, "red")
+	damage all players in radius 4 of {_l} by 0 hearts
+	remove 7 from health of all players in radius 4 of {_l}
+	strike lightning effect at all players in radius 4 of {_l}
+	wait 2 seconds
+	set {boss2::rings} to false

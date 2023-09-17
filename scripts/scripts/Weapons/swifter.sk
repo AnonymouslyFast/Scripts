@@ -1,0 +1,3 @@
+on right click:
+	if held item of player is stick named "&f&lSwifter":
+		apply potion of speed of tier 2 without particles to player for 1 minute replacing the existing effect

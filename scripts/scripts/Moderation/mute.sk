@@ -1,0 +1,56 @@
+command mute [<offlineplayer>] [<string>] [<string>]:
+	permission:	mute.temp
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				if arg-3 is set:
+					if arg-2 contains "s" or "m" or "h" or "d" or "y":
+						set {_n} to arg-2
+						replace all "s" and "m" and "h" and "d" and "y" with " " in {_n}
+						set {_time} to "second" if arg-2 contains "s"
+						set {_time} to "minute" if arg-2 contains "m"
+						set {_time} to "hour" if arg-2 contains "h"
+						set {_time} to "day" if arg-2 contains "d"
+						set {_time} to "year" if arg-2 contains "y"
+						set {_t} to "%{_n}% %{_time}%" parsed as timespan
+						set {mute::%arg-1's uuid%::1} to arg-3
+						set {mute::%arg-1's uuid%::2} to now
+						set {mute::%arg-1's uuid%::3} to {_t}
+						broadcast "&4&lPunishments &8&l>> &f%player% just muted &d%arg-1% &ffor %arg-2% because: %arg-3%"
+						while {mute::%arg-1's uuid%::*} is set:
+							set {_t1} to difference between {mute::%arg-1's uuid%::2} and now
+							set {_time} to difference between {_t1} and {mute::%arg-1's uuid%::3}
+							if {_time} < 1 second:
+								send "&4&lPunishments &8&l>> &fYour mute has expired" to arg-1 if arg-1 is online
+								delete {mute::%arg-1's uuid%::*}
+								stop loop
+							wait 1 tick
+					else:
+						send "&cplease make sure your time is in the proper format EX: 1s, 1m, 1h, 1d, 1y!"
+				else:
+					send "&cPlease provide a reason why you're punishing them!"
+			else:
+				send "&cplease make sure your time is in the proper format EX: 1s, 1m, 1h, 1d, 1y!"
+		else: 
+			send "&cPlease provide a player to punish!"
+
+on chat:
+	if {mute::%player's uuid%::*} is set:
+		cancel event
+		set {_t1} to difference between {mute::%player's uuid%::2} and now
+		set {_time} to difference between {_t1} and {mute::%player's uuid%::3}
+		send "&cYou're muted for: &l%{mute::%player's uuid%::1}%&c! &d(%{_time}%)"
+		
+command unmute [<offlineplayer>]:
+	permission: mute.unmute
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			if {mute::%arg-1's uuid%::*} is set:
+				delete {mute::%arg-1's uuid%::*}
+				broadcast "&4&lPunishments &8&l>> &f%player% just unmuted &d%arg-1%"
+			else:
+				send "&cThat player isn't muted!"
+		else:
+			send "&cPlease provide a player to unmute!"

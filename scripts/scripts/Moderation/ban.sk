@@ -1,0 +1,53 @@
+command tempban [<string>] [<string>] [<string>]:
+	permission: ban.temp
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				if arg-3 is set:
+					set {_vic} to arg-1 parsed as offlineplayer
+					if {_vic} is set:
+						if arg-2 contains "min" or "h" or "d" or "y":
+							set {_n} to arg-2
+							replace all "min" and "h" and "d" and "y" with " " in {_n}
+							set {_time} to "minute" if arg-2 contains "min"
+							set {_time} to "hour" if arg-2 contains "h"
+							set {_time} to "day" if arg-2 contains "d"
+							set {_time} to "year" if arg-2 contains "y"
+							set {_t} to "%{_n}% %{_time}%" parsed as timespan
+							broadcast "&4&lPunishments &8&l>> &f%player% just banned %{_vic}% for %arg-2% because: %arg-3%"
+							ban {_vic} due to arg-3 for {_t}
+							send " " to {_vic}
+							send "&c&lYou're banned from this server." to {_vic}
+							send "  &c⤳ Reason: &f%arg-3%" to {_vic}
+							send "  &c⤳ Time: &f%arg-2%" to {_vic}
+							send "  &c⤳ Staff Member: &f%player%" to {_vic}
+							send "  &c⤳ Unban Appeal: &f<link:https://discord.gg/zyMFxP5Y7g>https://discord.gg/zyMFxP5Y7g" to {_vic}
+							send " " to {_vic}
+							kick {_vic}
+						else:
+							send "&cPlease provide a time stamp EX: 1min, 1d, 1h, 1y"
+					else:
+						send "&cThat player does not exist!"
+				else:
+					send "&cPlease provide a reason for the ban!"
+			else:
+				send "&cPlease provide a time stamp EX: 1min, 1d, 1h, 1y"
+		else:
+			send "&cPlease provide a player!"
+			
+command unban [<offlineplayer>]:
+	permission: ban.unban
+	permission message: &cNo permission!
+	executable by: console and player
+	trigger:
+		if arg-1 is set:
+			if arg-1 is banned:
+				unban arg-1 
+			else:
+				send "&cThat player has not been banned yet!"
+		else: 
+			send "&cPlease provide a player!"
+	
+
+						

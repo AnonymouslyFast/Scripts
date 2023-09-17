@@ -1,0 +1,4 @@
+command /fixboss:
+	executable by: console
+	trigger:
+		spawnOWB({bossfix})

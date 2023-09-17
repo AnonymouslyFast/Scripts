@@ -1,0 +1,31 @@
+every 5 minutes:
+	broadcast "&3&l[Tip] &f: Do /warp traders to go to the traders! You can also do /faq for more useful stuff!"
+	
+on join:
+	if {Beta::inv::%player's uuid%::*} is set:
+		clear {Beta::inv::%player's uuid%::*}
+		wait 2 seconds
+		removeBeta(player)
+		send "Thanks for playing StaffBeta! your data has been restored"
+		
+function giveBetaItems(player: player):
+	add a diamond helmet of protection 10 named "&3&lZombie Helmet &f[&b5&f]" to {_items::*}
+	add a diamond chestplate of protection 10 named "&3&lZombie Chestplate &f[&b5&f]" to {_items::*}
+	add a diamond leggings of protection 10 named "&3&lZombie Leggings &f[&b5&f]" to {_items::*}
+	add a diamond boots of protection 10 named "&3&lZombie Boots &f[&b5&f]" to {_items::*}
+	add a diamond sword of sharpness 10 named "&3&lZombie Sword &f[&b5&f]" to {_items::*}
+	add a diamond pickaxe of efficiency 10 named "&3&lZombie Pickaxe &f[&b5&f]" to {_items::*}
+	add a diamond axe of efficiency 5 named "&3&lDiamond axe &f[&b5&f]" to {_items::*}
+	give {_player} {_items::*}
+	
+function removeBeta(player: player):
+		clear {_player}'s inventory
+		give {_player} {Beta::inv::%{_player}'s uuid%::*}
+		set {lvl::%{_player}'s uuid%} to {Beta::lvl::%{_player}'s uuid%}
+		set {prestige::%{_player}'s uuid%} to {Beta::prestige::%{_player}'s uuid%}
+		set {balance::%{_player}'s uuid%}  to {Beta::balance::%{_player}'s uuid%}
+		set {kills::%{_player}'s uuid%} to {Beta::kills::%{_player}'s uuid%}
+		set {deaths::%{_player}'s uuid%} to {Beta::deaths::%{_player}'s uuid%}
+		set {targetxp::%{_player}'s uuid%} to {Beta::targetxp::%{_player}'s uuid%}
+		set {xp::%{_player}'s uuid%} to {Beta::xp::%{_player}'s uuid%}
+		execute console command "lp user %{_player}% permission unset warp.nether"

@@ -1,0 +1,100 @@
+options:
+	bottomSlots: 27, 28, 29, 32, 33, 34, 35
+	
+function getChatColor(chatcolor: string) :: string:
+	if {_chatcolor} = "&f":
+		return " White"
+	else if {_chatcolor} = "&7" or gray:
+		return " Gray"
+	else if {_chatcolor} = "&c" or light red:
+		return " Light Red"
+	else if {_chatcolor} = "&4" or red: 
+		return " Red"
+	else if {_chatcolor} = "&8" or dark gray:
+		return " Dark Gray"
+	else if {_chatcolor} = "&d" or light purple:
+		return " Light Purple"
+	else if {_chatcolor} = "&5" or purple:
+		return " Purple"
+	else if {_chatcolor} = "&0" or black:
+		return " Black"
+	else if {_chatcolor} = "&1" or dark blue:
+		return " Dark Blue"
+	else if {_chatcolor} = "&2" or  green:
+		return " Green"
+	else if {_chatcolor} = "&3" or dark cyan:
+		return " Dark Cyan"
+	else if {_chatcolor} = "&6" or gold:
+		return " Gold"
+	else if {_chatcolor} = "&9" or blue:
+		return " Blue"
+	else if {_chatcolor} = "&a" or lime:
+		return " Light Green"
+	else if {_chatcolor} = "&b" or cyan:
+		return " Cyan"
+	else if {_chatcolor} = "&e" or yellow:
+		return " Yellow"
+		
+function getChatColorRequirement(color: string) :: string:
+	if {_color} = " Yellow" or " Gold":
+		return "&7Requires: &6&lVIP &fand above"
+	else if {_color} = " White":
+		return "&7Requires: &d&ldonator &for &f&lStaff"
+	else if {_color} = " Cyan" or " Green" or " Dark Green" :
+		return "&7Requires: &b&lMVP &fand above"
+	else if {_color} = " Dark Cyan" or " Light Purple" or " Purple" :
+		return "&7Requires: &3&lMVP+ &fand above"
+	else if {_color} = " Red" or " Light Red" or " Blue":
+		return "&7Requires&7: &c&lHeroic &fand above"
+	else:
+		return "&7Requires&7: &d&km <##FF5CCC>M<##DC52BF>y<##B947B1>s<##973DA4>t<##743296>i<##512889>c &d&km"
+
+function openChatColorGUI(player: player):
+	set {_gui} to chest inventory with 4 rows named "&7[&3&lE&b&lZ&7] <##ff0000>C<##ffa500>h<##ffff00>a<##008000>t <##ff0000>C<##008000>o<##ffa500>l<##ffff00>o<##ff0000>r"
+	set slots {@bottomSlots} of {_gui} to a black stained glass pane named " "
+	set slot 31 of {_gui} to a nether star named "&3&lINFO" with lore "&7Your Chat Color: %colored {chatColor::%{_player}'s uuid%}%%getChatColor({chatColor::%{_player}'s uuid%})%"
+	set slot 30 of {_gui} to a barrier named "&cClear ChatColor?" with lore "&7Click to clear your chat color!"
+	loop 35 times:
+		if loop-value is not {@bottomSlots}:
+			if {ChatColor::%loop-value%} is set:
+				if "%{chatColor::%{_player}'s uuid%}%%getChatColor({chatColor::%{_player}'s uuid%})%" = "%{ChatColor::%loop-value%}%":
+					set {_code::*} to {ChatColor::%loop-value%} split at " "
+					set {_c} to {ChatColor::%loop-value%}
+					replace first " " with "" in {_c}
+					replace first " " with "" in {_c}
+					if {_c} contains "light" or "dark":
+						replace all " " with "_" in {_c}
+					set {_own} to "&aTrue" if {_player} has permission "chatcolor.%uncolored {_c}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "chatcolor.%uncolored {_c}%"
+					set {_color} to getChatColor({_code::1})
+					if {tag::%{_player}'s uuid%} is set:
+						set slot loop-value-2 of {_gui} to a paper of mending named "%{_code::1}%%{_color}% (Selected)" with lore "&3&lInfo:%nl%  &7⤳ Own: %{_own}%%nl%  &7⤳ %getChatColorRequirement({_color})%%nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {tag::%{_player}'s uuid%}%&8]&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden
+					else:
+						set slot loop-value-2 of {_gui} to a paper of mending named "%{_code::1}%%{_color}% (Selected)" with lore "&3&lInfo:%nl%  &7⤳ Own: %{_own}%%nl%  &7⤳ %getChatColorRequirement({_color})%%nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}%&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden 
+				else:
+					set {_code::*} to {ChatColor::%loop-value%} split at " "
+					set {_c} to {ChatColor::%loop-value%}
+					replace first " " with "" in {_c}
+					if {_c} contains "light" or "dark":
+						replace all " " with "_" in {_c}
+					set {_own} to "&aTrue" if {_player} has permission "chatcolor.%uncolored {_c}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "chatcolor.%uncolored {_c}%"
+					set {_color} to getChatColor({_code::1})
+					if {tag::%{_player}'s uuid%} is set:
+						set slot loop-value-2 of {_gui} to a paper named "%{_code::1}%%{_color}%" with lore "&3&lInfo:%nl%  &7⤳ Own: %{_own}%%nl%  &7⤳ %getChatColorRequirement({_color})%%nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {tag::%{_player}'s uuid%}%&8]&7:%{_code::1}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden
+					else:
+						set slot loop-value-2 of {_gui} to a paper named "%{_code::1}%%{_color}%" with lore "&3&lInfo:%nl%  &7⤳ Own: %{_own}%%nl%  &7⤳ %getChatColorRequirement({_color})%%nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}%&7: %{_code::1}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden 
+					
+			else:
+				stop loop
+	open {_gui} to {_player}
+	
+	
+function chatColorGive(player: player, chatcolor: string):
+	execute console command "lp user %{_player}% permission set chatcolor.%{_chatcolor}%"
+	add {_chatcolor} to {chatColorOwned::%{_player}'s uuid%::*}
+	
+function chatColorRemove(player: player, chatcolor: string):
+	execute console command "lp user %{_player}% permission unset chatcolor.%{_chatcolor}%"
+	remove {_chatcolor} from {chatColorOwned::%{_player}'s uuid%::*}
+	

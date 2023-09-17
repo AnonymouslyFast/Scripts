@@ -1,0 +1,14 @@
+
+
+every 8 minutes:
+	broadcast "&3&l[TIP] &f: do /stopdrop to stop accidental drops!"
+	
+every 4 minutes:
+	broadcast "&7======[ &3&lEco&b&lZero &7]======"
+	broadcast "  &aLike us? If so do &d/favorite &ato help us out!"
+	broadcast "&7======[ &3&lEco&b&lZero &7]======"
+	
+every 10 minutes:
+	broadcast "&7======[ &3&lEco&b&lZero &7]======"
+	broadcast "  &aWant to help us out? If so please ad our server in the minehut lobby by doing &d/ad EcoZero in the minehut lobby!"
+	broadcast "&7======[ &3&lEco&b&lZero &7]======"

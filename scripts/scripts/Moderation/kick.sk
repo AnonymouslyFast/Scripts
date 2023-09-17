@@ -1,0 +1,13 @@
+command kick [<player>] [<string>]:
+	permission: kick.cmd
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				kick arg-1 due to arg-2
+				broadcast "&4&lPunishments &8&l>> &f%sender% just kicked &d%arg-1% for %arg-2%"
+			else:
+				kick arg-1 
+				broadcast "&4&lPunishments &8&l>> &f%sender% just kicked &d%arg-1% for N/A"
+		else:
+			send "&cPlease put a player to be kicked"

@@ -1,0 +1,34 @@
+on block break:
+	if event-block is pink glazed terracotta:
+		cancel event
+		set {_n} to nbt compound of event-block
+		set {_custom} to tag "custom" of nbt compound of event-block
+		if tag "health" of {_custom} is not set:
+			set tag "health" of {_custom} to 250000
+		set tag "health" of {_custom} to (tag "health" of {_custom})-1
+		set {_health} to tag "health" of {_custom}
+		send "&conly %{_health}% to go!"
+		set line 2 of block at location(-19.5, 73.5, 72.5, world "ul_skymine2") to "%{_health}%"
+		if {_health} is 150000:
+			send "&d&lWEIRD BLOCK &8- &fThe block only has &b150k &fhealth remaining!" to all players in radius 10 of event-block
+			strike lightning effect at event-block
+		if {_health} is 50000:
+			send "&d&lWEIRD BLOCK &8- &e50k &fleft!" to all players in radius 25 of event-block
+			strike lightning effect at event-block
+		if {_health} is 25000:
+			send "&d&lWEIRD BLOCK &8- &cFinal stretch!" to all players in radius 50 of event-block
+			strike lightning effect at event-block
+		if {_health} is 0:
+			set event-block to air
+			strike lightning effect at location of event-block
+			add 1 to {wierdblockeditions}
+			give player dirt named "&cwhy" with lore "&fMined by&8: &b%player%%nl%&fEdition: &b%{wierdblockeditions}%" 
+			broadcast " "
+			broadcast "&d&lWEIRD BLOCK &8- &b%player% &fmined the Weird Block and got a ""reward"". &8(Edition %{wierdblockeditions}%)"
+			broadcast " "
+			chance of 15%:
+				give player paper named "&c&lRank Upgrade Voucher" with lore "&fGive this to an owner %nl%to get a rank upgrade!"
+				loop 3 times:
+					strike lightning effect at event-block
+					wait 10 ticks
+				send "&cYou were given a rank upgrade voucher! Give this to an owner!" to player

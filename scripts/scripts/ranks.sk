@@ -1,0 +1,30 @@
+command dailygift:
+	cooldown: 12 hours
+	cooldown storage: {dailygift::%player's uuid%}
+	cooldown message: &7[&3&lDaily &b&lGift&7] &8&l>> &fYou're still on cooldown! &7(&b%remaining time%&f)
+	cooldown bypass: dailygift.bypass
+	trigger:
+		if player's groups contains "mvp+" or "heroic" or "mystic":
+			send "f"
+			givePremDG(player)
+		else:
+			send "y"
+			add 1000 to {balance::%player's uuid%}
+			execute console command "crate key give %player% common 1"
+			send "&7[&3&lDaily &b&lGift&7] &8&l>> &fthanks for playing! Here's a little gift: %nl%  &d- &2&l$1,000 %nl% &d- &f[1x] &7&lCommon &6Crate key" 
+			
+
+
+function givePremDG(player: player):
+	if {_player}'s groups contains "mystic":
+		add 40000 to {balance::%{_player}'s uuid%}
+		execute console command "crate key give %{_player}% mystic 1"
+		send "&7[&3&lDaily &b&lGift&7] &8&l>> &fthanks for playing! Here's a little gift: %nl%  &d- &2&l$40,000%nl%  &d- &f[1x] &d&lMystic &6Crate key" to {_player}
+	else if {_player}'s groups contains "heroic":
+		add 25000 to {balance::%{_player}'s uuid%}
+		execute console command "crate key give %{_player}% legendary 1"
+		send "&7[&3&lDaily &b&lGift&7] &8&l>> &fthanks for playing! Here's a little gift: %nl%  &d- &2&l$25,000%nl%  &d- &f[1x] &e&lLegendary &6Crate Key" to {_player}
+	else if {_player}'s groups contains "mvp+":
+		add 10000 to {balance::%{_player}'s uuid%}
+		execute console command "crate key give %{_player}% epic 1"
+		send "&7[&3&lDaily &b&lGift&7] &8&l>> &fthanks for playing! Here's a little gift: %nl%  &d- &2&l$10,000 %nl% &d- &f[1x] &d&lEpic &6Crate key" to {_player}			

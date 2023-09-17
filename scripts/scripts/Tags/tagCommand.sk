@@ -1,0 +1,60 @@
+command tag [<string>] [<string>] [<string>]:
+	permission: op
+	permission message: &cNo permission
+	trigger:
+		if arg-1 = "create":
+			if arg-2 is set:
+				if {blockedTags::*} does not contain arg-2:
+					createTag(arg-2)
+					send "&aCreated the tag!"
+				else:
+					send "That is a blocked tag!"
+			else:
+				send "&cPlease type a tag name!"
+		else if arg-1 = "apply":
+			if arg-2 is set:
+				set {_player} to arg-2 parsed as player
+				if {_player} is set:
+					if uncolored {Tags::*} contains arg-3:
+						if {_player} does not have permission "tag.%arg-3%":
+							add arg-3 to {playerTags::%{_player}'s uuid%::*}
+							applyTag({_player}, arg-3)
+						else:
+							send "&cThat player already has this tag!"
+					else:
+						send "&cPlease use a valid tag!"
+				else:
+					send "&cPlease send a online player!"
+			else:
+				send "&cPlease send a online player!"
+		else if arg-1 = "remove":
+			if arg-2 is set:
+				set {_player} to arg-2 parsed as player
+				if {_player} is set:
+					if uncolored {Tags::*} contains arg-3:
+						if {_player} has permission "tag.%arg-3%":
+							removeTagFP({_player}, arg-3)
+							send "&aRemoved player's tag!"
+						else:
+							send "&cThat player does not have that tag!"
+					else:
+						send "&cPlease use a valid tag!"
+				else:
+					send "&cPlease send a online player!"
+			else:
+				send "&cPlease send a online player!"
+		else if arg-1 = "delete":
+			if arg-2 is set:
+				if {Tags::*} contains arg-2:
+					deleteTag(arg-2)
+					send "&aDeleted that tag!"
+				else:
+					send "&cPlease enter in a valid tag!"
+			else:
+				send "&cPlease enter in a tag!"
+		else:
+			send "&c/tag <create/remove/delete/apply> <argument-2> <argument-3>"
+			
+command tags:
+	trigger:
+		openTagsGUI(player)

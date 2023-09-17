@@ -1,0 +1,36 @@
+#Spawn shit for EcoZero
+
+
+command setspawn:
+	permission: op
+	permission message: &cNo permission!
+	trigger:
+		set {spawn} to player's location
+		send "Set spawn at your location! &d(%player's location%)"
+		
+command /spawn [<offline player>]:
+	cooldown: 3.5 seconds
+	cooldown message: &cPlease wait %remaining time%!
+	trigger:
+		if arg-1 is set:
+			player does not have permission "spawn.others":
+				send "&4&lERROR &8| &cYou do not have permission!"
+				stop
+			else:
+				teleport arg-1 to {spawn}
+				send title "&aYou were teleported to spawn!" to arg-1
+				send "&aSent player to spawn!"
+		else:
+			if player has permission "spawn.bypass":
+				teleport player to {spawn}
+			else:
+				set {_l} to block at player
+				loop reversed 3 times:
+					if block at player is not {_l}:
+						send title "&cTeleportation canceled!" with subtitle "You moved!" to player
+						stop
+					else:
+						send title "&2Teleporting in %loop-value% seconds..." to player
+						wait 1 second
+				teleport player to {spawn}
+				send title "&aTeleported to spawn!"

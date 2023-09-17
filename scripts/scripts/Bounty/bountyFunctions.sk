@@ -1,0 +1,48 @@
+function createBounty(player: player, victim: player, amount: number):
+	if {bounty::%{_victim}'s uuid%} is not set:
+		broadcast "%nl%&c&lBountys &8&l>> &d%{_player}% &fhas created a bounty on &d%{_victim}%!"
+		broadcast "  ⤳ Bounty: &b$%{_amount}%"
+		broadcast "  ⤳ Time left Kill: &b15 min"
+		broadcast ""
+		set {bounty::%{_victim}'s uuid%} to {_amount}
+		set {bounty::Time::%{_victim}'s uuid%} to now
+		remove {_amount} from {balance::%{_player}'s uuid%}
+		set {_time} to difference between now and {bounty::Time::%{_victim}'s uuid%}
+		set {_t} to difference between 15 minutes and {_time}
+		while {bounty::Time::%{_victim}'s uuid%} is set:
+			if {_t} <= 15 minutes:	
+				removeBounty({_victim}, "expired", {_player})
+				exit
+			wait 1 tick
+	else:
+		set {_time} to difference between now and {bounty::Time::%{_victim}'s uuid%}
+		set {_t} to difference between 15 minutes and {_time}
+		if {_t} >= 10 minutes:
+			set {_t1} to "%difference between 15 minutes and {_time}%"
+			replace all " seconds" and " second" with "s" in {_t1}
+			replace all " minutes" and " minute" with "min" in {_t1}
+			remove {_amount} from {balance::%{_player}'s uuid%}
+			add {_amount} to {bounty::%{_victim}'s uuid%} 
+			broadcast "%nl%&c&lBountys &8&l>> &d%{_player}% &fhas added onto the bounty on &d%{_victim}%!"
+			broadcast "  ⤳ Bounty: &2$%{bounty::%{_victim}'s uuid%}%"
+			broadcast "  ⤳ Time left kill: &b%{_t1}%"
+			broadcast ""
+		else:
+			set {bounty::Time::%{_victim}'s uuid%} to now
+			remove {_amount} from {balance::%{_player}'s uuid%}
+			add {_amount} to {bounty::%{_victim}'s uuid%} 
+			broadcast "%nl%&c&lBountys &8&l>> &d%{_player}% &fhas added onto the bounty on &d%{_victim}%!"
+			broadcast "  ⤳ Bounty: &b$%{bounty::%{_victim}'s uuid%}%"
+			broadcast "  ⤳ Time left kill: &b15min"
+			broadcast ""
+		
+function removeBounty(player: player, cause: string, p: player):
+	if {_cause} = "expired":
+		broadcast "&c&lBountys &8&l>> &fBounty on &d%{_player}% &fhas expired!"
+		delete {bounty::%{_player}'s uuid%}
+		delete {bounty::Time::%{_player}'s uuid%}
+	else if {_cause} = "killed":
+		broadcast "&c&lBountys &8&l>> &fBounty on &d%{_player}% &fhas been claimed by &d%{_p}%!"
+		add {bounty::%{_player}'s uuid%} to {balance::%{_p}'s uuid%}
+		delete {bounty::Time::%{_player}'s uuid%}
+		delete {bounty::%{_player}'s uuid%}

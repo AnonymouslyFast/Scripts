@@ -1,0 +1,10 @@
+on join:
+	if difference between now and {bounty::Time::%player's uuid%} >= 15 minutes:
+		removeBounty(player, "expired", player)
+		
+on death:
+	victim is a player
+	attacker is a player
+	{bounty::%victim's uuid%} is set
+	removeBounty(victim, "killed", attacker)
+		

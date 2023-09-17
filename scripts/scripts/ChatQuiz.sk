@@ -1,0 +1,250 @@
+# -- Chat Quiz -- #
+options: # <-- Options are used to create variables basically
+        
+    # Timings/Format                
+    prefix: &7[&3CHAT&bQUIZ&7]
+    delay: 2 minutes                
+    questiontime: 12 seconds
+    additionNumberMIN: 350
+    additionNumberMAX: 10000
+    MultiplicationNumberMIN: 10
+    MultiplicationNumberMAX: 100
+    subtractionNumberMIN: 1000
+    subtractionNumberMAX: 10000 
+    OverworldBlocks: oak log and stone and iron ore and diamond ore and diamond and emerald ore and redstone ore and coal ore and green dye and gold ore
+    NetherBlocks: obsidian and crying obsidian and crimson hyphae and warped hyphae and gilded blackstone and ancient debris and nether quartz ore and netherite ingot               
+    # Prizes                         
+    moneymin: 1000
+    moneymax: 4000
+
+
+# Question and Answer function  
+function qanda() :: string:
+    if {ChatQuiz::answer} is not set:
+
+        set {_random} to a random integer between 1 and 21
+        set {_chance} to a random integer between 0 and 100
+
+        # *Assigning Questions and Answers* #
+        # ===================================
+        # Q1
+        if {_random} is 1:
+            broadcast "{@prefix} &eHow many meters does one minecraft block equal? "
+            set {ChatQuiz::answer} to "1"
+            
+        #Q2
+        else if {_random} is 2:
+            broadcast "{@prefix} &eTrue or False; There are 3 dimensions in minecraft"
+            set {ChatQuiz::answer} to "True"
+            
+        #Q3
+        else if {_random} is 3:
+            broadcast "{@prefix} &eWhich creature has 2 hearts?"
+            set {ChatQuiz::answer} to "Chicken"
+            
+        #Q4
+        else if {_random} is 4:
+            broadcast "{@prefix} &eWhat animal drops an ink sac?"
+            set {ChatQuiz::answer} to "Squid"
+            
+        #Q5
+        else if {_random} is 5:
+            broadcast "{@prefix} &eWhich of the following cannot be tamed: Wolf, Chicken, Ocelot, Horse"
+            set {ChatQuiz::answer} to "Chicken"
+            
+        #Q6
+        else if {_random} is 6:
+            broadcast "{@prefix} &eHow many types of flowers are there?"
+            set {ChatQuiz::answer} to "17"
+            
+        #Q7
+        else if {_random} is 7:
+            broadcast "{@prefix} &eWhat color is Steve's oufit?"
+            set {ChatQuiz::answer} to "Blue"
+            
+        #Q8
+        else if {_random} is 8:
+            broadcast "{@prefix} &eWhat are Endermen afraid of?"
+            set {ChatQuiz::answer} to "Water"
+            
+        #Q9
+        else if {_random} is 9:
+            broadcast "{@prefix} &eHow many iron blocks are needed to make an iron golem?"
+            set {ChatQuiz::answer} to "4"
+            
+        #Q10
+        else if {_random} is 10:
+            broadcast "{@prefix} &eWhat are creepers afraid of?"
+            set {ChatQuiz::answer} to "Ocelots"
+            
+        #Q11
+        else if {_random} is 11:
+            broadcast "{@prefix} &eWhat boss has 3 heads?"
+            set {ChatQuiz::answer} to "Wither"
+            
+        #Q12
+        else if {_random} is 12:
+            broadcast "{@prefix} &eTrue or False; You can sleep in the end"
+            set {ChatQuiz::answer} to "False"
+            
+        #Q13
+        else if {_random} is 13:
+            broadcast "{@prefix} &eWhat is the infamous 'unbreakable block'"
+            set {ChatQuiz::answer} to "Bedrock"
+            
+        #Q14
+        else if {_random} is 14:
+            broadcast "{@prefix} &eWhat is the creator of the game called?"
+            set {ChatQuiz::answer} to "Notch"
+            
+        #Q15
+        else if {_random} is 15:
+            broadcast "{@prefix} &eHow many diamonds do you need to craft a full set of diamond armor?"
+            set {ChatQuiz::answer} to "24"
+            
+        #Q16
+        else if {_random} is 16:
+            broadcast "{@prefix} &eWhat tool material has the least durability in the game?"
+            set {ChatQuiz::answer} to "Gold"
+            
+        #Q17
+        else if {_random} is 17:
+            broadcast "{@prefix} &eWhat is the color code letter for the color red?"
+            set {ChatQuiz::answer} to "c"
+            
+        #Q18
+        else if {_random} is 18:
+            broadcast "{@prefix} &eWhat mob drops discs under the right circumstances?"
+            set {ChatQuiz::answer} to "Creeper"
+            
+        #Q19
+        else if {_random} is 19:
+            broadcast "{@prefix} &eWhat mob becomes charged when struck by lightning?"
+            set {ChatQuiz::answer} to "Creeper"
+            
+        #Q20
+        else if {_random} is 20:
+            broadcast "{@prefix} &eWhat is the name of this server?"
+            set {ChatQuiz::answer} to "EcoZero"
+
+        # -- Math -- #
+
+        #Q21 
+        else if {_random} is 21:
+
+            # Addition
+            if {_chance} is between 0 and 50:
+                set {_numbers::*} to a random integer between {@additionNumberMIN} and {@additionNumberMAX}
+                add a random integer between {@additionNumberMIN} and {@additionNumberMAX} to {_numbers::*} 
+                broadcast "{@prefix} &fWhat's %{_numbers::1}% + %{_numbers::2}%?"
+                set {ChatQuiz::answer} to {_numbers::1} + {_numbers::2}
+
+            # Multiplication
+            else if {_chance} is between 51 and 75:
+                set {_numbers::*} to a random integer between {@MultiplicationNumberMIN} and {@MultiplicationNumberMAX}
+                add a random integer between {@MultiplicationNumberMIN} and {@MultiplicationNumberMAX} to {_numbers::*} 
+                set {ChatQuiz::answer} to {_numbers::1}*{_numbers::2}
+                broadcast "{@prefix} &fWhat's %{_numbers::1}% * %{_numbers::2}%?"
+
+            # Subtraction 
+            else if {_chance} is between 76 and 100:
+                set {_numbers::*} to a random integer between {@subtractionNumberMIN} and {@subtractionNumberMAX}
+                add a random integer between {@subtractionNumberMIN} and {@subtractionNumberMAX} to {_numbers::*}
+                
+                if {_numbers::1} is greater than {_numbers::2}:
+                    set {ChatQuiz::answer} to {_numbers::1}-{_numbers::2}
+                    broadcast "{@prefix} &fWhat's %{_numbers::1}% - %{_numbers::2}%?"
+                else if {_numbers::2} is greater than {_numbers::1}:
+                    set {ChatQuiz::answer} to {_numbers::2}-{_numbers::1}
+                    broadcast "{@prefix} &fWhat's %{_numbers::2}% - %{_numbers::1}%?"
+             
+
+    # Running when expired
+    wait {@questiontime}
+    if {ChatQuiz::answer} is not set:
+        stop
+    else:
+        reward("AnonymouslyFast" parsed as player, false)
+
+
+
+
+
+
+ 
+# Checking answer and rewarding function 
+function reward(player: player, condition: boolean):
+	if {ChatQuiz::answer} is set:
+		if {_condition} = true:
+ 
+			# Setting rewards and broadcasting
+			set {_choice} to a random integer between 1 and 15
+			set {_chance} to a random integer between 1 and 100
+			set {_money} to a random integer between {@moneymin} and {@moneymax}
+			broadcast "{@prefix} &e%{_player}% got it right! The correct answer is %{ChatQuiz::answer}%"
+
+			# Assigning reward 
+			if {_chance} is between 1 and 50:
+				set {_list::*} to {@OverworldBlocks}
+				set {_i} to a random element out of {_list::*}
+				set {_amount} to a random integer between 1 and 10
+				give {_amount} of Compress({_i}) to {_player}  
+				execute console command "/moneynote give %{_player}% %{_money}%"
+			else if {_chance} is between 51 and 100:
+				set {_list::*} to {@NetherBlocks}
+				set {_i} to a random element out of {_list::*}
+				set {_amount} to a random integer between 1 and 10
+				give {_amount} of Compress({_i}) to {_player}  
+				execute console command "/moneynote give %{_player}% %{_money}%"
+			clear {ChatQuiz::answer}
+
+		# Quiz expires
+		if {_condition} is false:
+			broadcast "{@prefix} &eNo one answered correctly. The correct answer was: %{ChatQuiz::answer}%"
+			delete {ChatQuiz::answer}
+
+
+
+
+
+# Compress the given item
+function Compress(i: item) :: item:
+	#                   Overworld Items                   #
+	set {_return} to {item::comp_log} if {_i} = oak log
+	set {_return} to {item::comp_stone} if {_i} = stone
+	set {_return} to {item::comp_iron} if {_i} = iron ore
+	set {_return} to {item::comp_diamond} if {_i} = diamond ore
+	set {_return} to {item::supercomp_diamond} if {_i} = diamond 
+	set {_return} to {item::comp_emerald} if {_i} = emerald ore
+	set {_return} to {item::comp_redstone} if {_i} = redstone ore
+	set {_return} to {item::comp_coal} if {_i} = coal ore
+	set {_return} to {item::king_zombie_skull} if {_i} = green dye
+	set {_return} to {item::comp_gold} if {_i} = gold ore
+	
+	#                   Nether Items                   #
+
+	set {_return} to {item::comp_obsidian} if {_i} = obsidian
+	set {_return} to {item::comp_crying_obsidian} if {_i} = crying obsidian
+	set {_return} to {item::comp_crimson_hyphae} if {_i} = crimson hyphae
+	set {_return} to {item::comp_warped_hyphae} if {_i} = warped hyphae
+	set {_return} to {item::comp_gilded_blackstone} if {_i} = gilded blackstone
+	set {_return} to {item::comp_ancient_debris} if {_i} = ancient debris
+	set {_return} to {item::comp_quarts} if {_i} = nether quartz ore #dont change "quarts" spelling
+	set {_return} to {item::comp_netherite} if {_i} = netherite ingot
+	if {_return} is set:
+		return {_return}
+	else:
+		send "ERR: %{_i}% is not a valid item to compress" to console
+
+
+
+# Main  
+every {@delay}:
+    qanda()
+	
+	
+on chat:
+    if {ChatQuiz::answer} is set:
+        if message contains "%{ChatQuiz::answer}%":
+            wait 1 tick
+            reward(player, true) 

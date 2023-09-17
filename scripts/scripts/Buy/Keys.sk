@@ -1,0 +1,70 @@
+options:
+	backSlot: 27
+	limeSlots: 29, 31, 33, 35, 37
+	greenSlots: 28, 30, 32, 34, 36
+
+function getTebexKeys(item: string) :: number:
+	if {_item} = "Common Crate Key":
+		return 1
+	else if {_item} = "Rare Crate Key":
+		return 1.50
+	else if {_item} = "Epic Crate Key":
+		return 3
+	else if {_item} = "Legendary Crate Key":
+		return 3.50
+	else if {_item} = "Mystic Crate Key":
+		return 5
+	else if {_item} = "Common Crate Key All":
+		return 4
+	else if {_item} = "Rare Crate Key All":
+		return 4.50
+	else if {_item} = "Epic Crate Key All":
+		return 5
+	else if {_item} = "Legendary Crate Key All":
+		return 5.50
+	else if {_item} = "Mystic Crate Key All":
+		return 6
+		
+function getTebexKeyName(key: string) :: string:
+	if {_key} = "Common Crate Key":
+		return "&7&lCommon &6Crate Key"
+	else if {_key} = "Rare Crate Key":
+		return "&9&lRare &6Crate Key"
+	else if {_key} = "Epic Crate Key":
+		return "&d&lEpic &6Crate Key"
+	else if {_key} = "Legendary Crate Key":
+		return "&e&lLegendary &6Crate Key"
+	else if {_key} = "Mystic Crate Key":
+		return "&d&km <##FF5CCC>M<##DC52BF>y<##B947B1>s<##973DA4>t<##743296>i<##512889>c &6Crate Key &d&km"
+	else if {_key} = "Common Crate Key All":
+		return "&7&lCommon &6Crate Key All"
+	else if {_key} = "Rare Crate Key All":
+		return "&9&lRare &6Crate Key All"
+	else if {_key} = "Epic Crate Key All":
+		return "&d&lEpic &6Crate Key All"
+	else if {_key} = "Legendary Crate Key All":
+		return "&e&lLegendary &6Crate Key All"
+	else if {_key} = "Mystic Crate Key All":
+		return "&d&km <##FF5CCC>M<##DC52BF>y<##B947B1>s<##973DA4>t<##743296>i<##512889>c &6Crate Key All &d&km"
+	
+	
+function openKeyGUI(player: player):
+	set {_gui} to chest inventory with 4 rows named "&7[&3&lE&b&lZ&7] &2&lBuy &7> &6&lKeys"
+	loop {tebexKeys::*}:
+		set {_e} to "%loop-index%" parsed as integer
+		set {_name} to getTebexKeyName(loop-value)
+		set slots {@limeSlots} of {_gui} to lime stained glass pane named " " 
+		set slots {@greenSlots} of {_gui} to green stained glass pane named " "
+		set slot {@backSlot} of {_gui} to a arrow named "&3&lBack" with lore "&7Click to go to main menu"
+		set slot {_e}-1 of {_gui} to a tripwire hook named "%{_name}%" with lore "&2&lPrice: &f$%getTebexKeys(loop-value)%" and "&7Click to go to webstore"
+	open {_gui} to {_player}
+	
+on inventory click:
+	event-inventory's name = "&7[&3&lE&b&lZ&7] &2&lBuy &7> &6&lKeys"
+	cancel event
+	if event-slot = {@backSlot}:
+		openBuy(player)
+	else if (integers between 0 and size of {tebexKeys::*}) contains event-slot:
+		close inventory of player
+		send formatted "&7<link:%getURL("keys")%>Click to go to &d%getURL("keys")%"
+		

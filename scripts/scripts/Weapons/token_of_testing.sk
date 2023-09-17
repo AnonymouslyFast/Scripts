@@ -1,0 +1,11 @@
+on right click:
+	if uncolored name of tool of player is "Token of Testing":
+		if difference between now and {-player::token_of_testing::%player's uuid%::right_click} is less than 1 seconds:
+			{-player::token_of_testing::%player's uuid%::right_click} is set:
+				send "&cPlease wait a bit before using this ability again!" to player
+				stop
+		set {-player::token_of_testing::%player's uuid%::right_click} to now
+		set {_l} to location of player
+		loop 180 times:
+			set {_v} to cylindrical vector radius 2, yaw loop-value * 2, height 1
+			lerp 0 of dust using dustOption(yellow, 1) at {_l} ~ {_v}

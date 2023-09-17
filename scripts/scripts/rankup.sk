@@ -1,0 +1,138 @@
+options:
+	primarySlots: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 26, 28, 30, 32, 34, 36, 38, 42
+	secondarySlots: 1, 3, 5, 7, 9, 11, 15, 17, 27, 35, 37, 39, 41, 43
+	fillerSlots: 13, 21, 23, 31
+	MinerCost: 5000
+	KnightCost: 50000
+	AstronautCost: 75000
+	HackerCost: 100000
+	MythicCost: 150000
+	LegendaryCost: 250000
+	GodlyCost: 500000
+	
+on join:
+	if groups of player does not contain "default":
+		execute console command "lp user %player% parent add default"
+
+function openRankUpGUI(player: player):
+	set {_gui} to chest inventory with 5 rows named "&c&lRankUp GUI"
+	set slots {@primarySlots} of {_gui} to a blue stained glass pane named " "
+	set slots {@secondarySlots} of {_gui} to a light blue stained glass pane named " "
+	set slots {@fillerSlots} of {_gui} to a black stained glass pane named " "
+	set slot 19 of {_gui} to a yellow shulker box named "&6&lVIP Rank" with lore "&7Click for more information!"
+	set slot 25 of {_gui} to a cyan shulker box named "&3&lMVP+ Rank" with lore "&7Click for more information!" 
+	set slot 29 of {_gui} to a light blue shulker box named "&3&lMVP Rank" with lore "&7Click for more information!"
+	set slot 33 of {_gui} to a red shulker box named "&4&lHeroic Rank" with lore "&7Click for more information!" 
+	set slot 40 of {_gui} to a purple shulker box named "%getMysticPrefix()% Rank" with lore "&7Click for more information!" 
+	set slot 44 of {_gui} to a barrier named "&cRank Perks" with lore "&7Click to go to &c&lRank Perks"
+	if {_player}'s groups contains "Godly":
+		set slot 22 of {_gui} to a barrier named "&cMAX RANK"
+	else if {_player}'s groups contains "Legendary":
+		set slot 22 of {_gui} to a dragon egg named "&c&lGODLY &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@GodlyCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "Mythic":
+		set slot 22 of {_gui} to a yellow dye named "&e&lLegendary &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@LegendaryCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "hacker":
+		set slot 22 of {_gui} to a purple dye named "&d&lMythic &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@MythicCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "Astronaut":
+		set slot 22 of {_gui} to a red dye named "&4&lHacker &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@HackerCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "Knight":
+		set slot 22 of {_gui} to a elytra named "&3&lAstronaut &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@AstronautCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "Miner":
+		set slot 22 of {_gui} to a sword named "&f&lKnight &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@KnightCost}%nl%%nl%&7&oClick to buy"
+	else if {_player}'s groups contains "Default":
+		set slot 22 of {_gui} to a stone pickaxe named "&8&lMiner &bRank" with lore "&3&lRequirements: %nl%  &7↪ Cost: &2&l${@MinerCost}%nl%%nl%&7&oClick to buy"
+	open {_gui} to {_player}
+	
+	
+function openRankPerks(player: player):
+	set {_gui} to a chest inventory with 4 rows named "&c&lRankUp GUI &8&l> &c&lRank Perks"
+	open {_gui} to {_player}
+	
+on inventory click:
+	if event-inventory's name = "&c&lRankUp GUI":
+		cancel event
+		if event-slot = 22:
+			RankUpPlayer(player)
+			wait 1 tick
+			openRankUpGUI(player)
+		else if event-slot = 44:
+			openRankPerks(player)
+		else:
+			if event-slot = 19:
+				send formatted "<link:https://ecozero.tebex.io/package/5631476>&7Click me to go to the &6&lVIP &7section in out webstore! &d(https://ecozero.tebex.io/package/5631476)"
+			else if event-slot = 25:
+				send formatted "<link:https://ecozero.tebex.io/package/5631482>&7Click me to go to the &3&lMVP+ &7section in out webstore! &d(https://ecozero.tebex.io/package/5631482)"
+			else if event-slot = 29:
+				send formatted "<link:https://ecozero.tebex.io/package/5631478>&7Click me to go to the &3&lMVP &7section in out webstore! &d(https://ecozero.tebex.io/package/5631478)"
+			else if event-slot = 33:
+				send formatted "<link:https://ecozero.tebex.io/package/5631487>&7Click me to go to the &4&lHeroic &7section in out webstore! &d(https://ecozero.tebex.io/package/5631487)"
+			else if event-slot = 40:
+				send formatted "<link:https://ecozero.tebex.io/package/5631488>&7Click me to go to the %getMysticPrefix()% &7section in out webstore! &d(https://ecozero.tebex.io/package/5631488)"
+				
+			
+function RankUpPlayer(player: player):
+	if {_player}'s groups contains "Godly":
+		send "&cMaxed rank has been reached already!" to {_player}
+	else if {_player}'s groups contains "Legendary":
+		if {balance::%{_player}'s uuid%} >= {@GodlyCost}:
+			remove {@GodlyCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add godly"
+			log "%{_player}% Ranked up from Legendary to Hacker" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &c&lGodly&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@LegendaryCost})" to {_player}
+	else if {_player}'s groups contains "Mythic":
+		if {balance::%{_player}'s uuid%} >= {@LegendaryCost}:
+			remove {@LegendaryCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add legendary"
+			log "%{_player}% Ranked up from Mythic to Legendary" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &e&lLegendary&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@LegendaryCost})" to {_player}
+	else if {_player}'s groups contains "hacker":
+		if {balance::%{_player}'s uuid%} >= {@MythicCost}:
+			remove {@MythicCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add mythic"
+			log "%{_player}% Ranked up from Hacker to Mythic" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &d&lMythic&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@MythicCost})" to {_player}
+	else if {_player}'s groups contains "Astronaut":
+		if {balance::%{_player}'s uuid%} >= {@HackerCost}:
+			remove {@HackerCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add hacker"
+			log "%{_player}% Ranked up from Astronaut to hacker" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &4&lHacker&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@HackerCost})" to {_player}
+	else if {_player}'s groups contains "knight":
+		if {balance::%{_player}'s uuid%} >= {@AstronautCost}:
+			remove {@AstronautCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add astronaut"
+			log "%{_player}% Ranked up from Knight to Astronaut" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &8&3Astronaut&7!" to {_player}
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@AstronautCost})" to {_player}
+	else if {_player}'s groups contains "miner":
+		if {balance::%{_player}'s uuid%} >= {@KnightCost}:
+			remove {@KnightCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add knight"
+			log "%{_player}% Ranked up from Miner to Knight" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &f&lKnight&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@KnightCost})" to {_player}
+	else if {_player}'s groups contains "default":
+		if {balance::%{_player}'s uuid%} >= {@MinerCost}:
+			remove {@MinerCost} from {balance::%{_player}'s uuid%}
+			execute console command "lp user %{_player}% parent add miner"
+			log "%{_player}% Ranked up from Default to Miner" to "rankup.log"
+			broadcast "&c&lRankUps:%nl%  &f%{_player}%&7 Just ranked up to &8&lMiner&7!"
+		else:
+			send "&cNot enough money! &d(%{balance::%{_player}'s uuid%}%/{@MinerCost})" to {_player}
+			
+			
+			
+
+			
+
+			

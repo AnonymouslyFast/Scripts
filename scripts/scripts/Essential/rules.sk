@@ -1,0 +1,60 @@
+options:
+	filledSlots: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53, 54
+
+on load: 
+	if {rules::*} is not set:
+		set {rules::*} to "No NSFW"
+
+
+command rules [<string>] [<string>]:
+	cooldown: 2 seconds
+	trigger:
+		if arg-1 is not set:
+			set {_e} to a chest inventory with 6 rows named "&7[&3&lE&b&lZ&7] &c&lRULES"
+			set slots {@filledSlots} of {_e} to black stained glass pane
+			set slot 49 of {_e} to a nether star named "&bInfo" with lore "%nl%&3&lGo to /discord for more%nl%&3&linformation on rules!"
+			set {_e::*} to {rules::*}
+			loop 54 times:
+				if {@filledSlots} does not contain loop-value:
+					if "%{_e::*}%" != "<none>":
+						add 1 to {_a}
+						set {_d} to {_e::%{_a}%}
+						set slot loop-value of {_e} to a enchanted book named "&c%{_d}%"
+						remove {_d} from {_e::*}
+					else:
+						stop loop
+			open {_e} to player
+		else if arg-1 = "add":
+			if player has permission "rules.add":
+				if arg-2 is set:
+					add arg-2 to {rules::*}
+					send "&aComplete! &fAdded &d%arg-2% &fTo rules!"
+				else:
+					send "&bEcoZero &8&l>> &fPlease enter a rule name!"
+			else:
+				send "&cNo permission!"
+		else if arg-1 = "remove":
+			if player has permission "rule.remove":
+				if arg-2 is set:
+					if {rules::*} contains arg-2:
+						remove arg-2 from {rules::*}
+						send "&bEcoZero &8&l>> &fCompleted Deleted &d%arg-2%"
+					else:
+						send "&bEcoZero &8&l>> &fPlease enter a vaild rule!"
+				else:
+					send "&bEcoZero &8&l>> &fPlease enter in a rule to be removed!"
+			else:
+				send "&cNo permission!"
+		else:
+			send "/rules [<add/remove>] [<string>]"
+			
+on tab complete of "/rules":
+	set tab completions for position 1 to "add" and "remove"
+	if tab arg-1 = "remove":
+		set tab completions for position 2 to {rules::*}
+			
+on inventory click:
+	if event-inventory's name = "&7[&3&lE&b&lZ&7] &c&lRULES":
+		cancel event
+						
+							

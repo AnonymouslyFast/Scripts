@@ -1,0 +1,122 @@
+options:
+	bottomSlots: 36, 37, 38, 42, 43, 44, 45
+
+on load:
+	if {Tags::*} is not set:
+		set {Tags::*} to ""
+	if {blockedTags::*} is not set:
+		set {blockedTags::*} to {chatFilter::*}
+		
+on join:
+	if {playerTags::%player's uuid%::*} is not set:
+		set {playerTags::%player's uuid%::*} to "<none>"
+		
+function createTag(tag: string):
+	add {_tag} to {Tags::*}
+	
+function deleteTag(tag: string):
+	remove {_tag} from {Tags::*}
+	
+function applyTag(player: player, tag: string):
+	set {tag::%{_player}'s uuid%} to {_tag}
+	
+function addPlayerTag(player: player, tag: string):
+	execute console command "lp user %{_player}% permission set tag.%uncolored {_tag}% true"
+	
+function removeTag(player: player):
+	clear {tag::%{_player}'s uuid%}
+	
+function removeTagFP(player: player, tag: string):
+	execute console command "lp user %{_player}% permission unset tag.%uncolored {_tag}%"
+	
+	
+function openTagsGUI(player: player):
+	set {_gui} to chest inventory with 5 rows named "&7[&3&lE&b&lZ&7] &3&lTags"
+	set slots {@bottomSlots} of {_gui} to a black stained glass pane named " "
+	set {_e} to "N/A"
+	set slot 40 of {_gui} to a nether star named "&3&lINFO" with lore "&7Your Tag: &f%colored {tag::%{_player}'s uuid%} ? {_e}%"
+	set slot 41 of {_gui} to {_player}'s skull named "&cYour Tags" with lore "&7Click to see your tags"
+	set slot 39 of {_gui} to a barrier named "&cClear Tag?" with lore "&7Click to clear"
+	loop 45 times:
+		if loop-value != {@bottomSlots}:
+			if "%{Tags::%loop-value%}%" != "<none>":
+				if "%colored {tag::%{_player}'s uuid%}%" = "%colored {Tags::%loop-value%}%":
+					set {_own} to "&aTrue" if {_player} has permission "tag.%uncolored {Tags::%loop-value%}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "tag.%uncolored {Tags::%loop-value%}%"
+					set slot loop-value-2 of {_gui} to a name tag of mending named colored "%colored {Tags::%loop-value%}% &f(Selected)" with lore "" and "&3&lInfo&7:%nl%  &7⤳ Own: &f%{_own}% %nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {Tags::%loop-value%}%&8]&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden
+				else:
+					set {_own} to "&aTrue" if {_player} has permission "tag.%uncolored {Tags::%loop-value%}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "tag.%uncolored {Tags::%loop-value%}%"
+					set slot loop-value-2 of {_gui} to a name tag named colored {Tags::%loop-value%} with lore "" and "&3&lInfo&7:%nl%  &7⤳ Own: &f%{_own}% %nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {Tags::%loop-value%}%&8]&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select"
+			else:
+				stop loop
+		else:
+			stop loop
+	open {_gui} to {_player}
+	
+	
+function openPlayerTags(player: player):
+	set {_gui} to chest inventory with 5 rows named "&7[&3&lE&b&lZ&7] &3&lTags &7> &c&lYour Tags"
+	set slots {@bottomSlots} of {_gui} to a black stained glass pane named " "
+	set {_e} to "N/A"
+	set slot 40 of {_gui} to a nether star named "&3&lINFO" with lore "&7Your Tag: &f%colored {tag::%{_player}'s uuid%} ? {_e}%"
+	set slot 41 of {_gui} to arrow named "&cBack" with lore "&7Click to go back to main menu"
+	set slot 39 of {_gui} to a barrier named "&cClear Tag?" with lore "&7Click to clear"
+	loop 45 times:
+		if loop-value != {@bottomSlots}:
+			if "%{Tags::%loop-value%}%" != "<none>":
+				{_player} has permission "tag.%uncolored {Tags::%loop-value%}%"
+				add 1 to {_slot}
+				if "%colored {Tags::%loop-value%}%" = "%colored {tag::%{_player}'s uuid%}%":
+					set {_own} to "&aTrue" if {_player} has permission "tag.%uncolored {Tags::%loop-value%}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "tag.%uncolored {Tags::%loop-value%}%"
+					set slot {_slot}-1 of {_gui} to a name tag of mending named colored "%colored {Tags::%loop-value%}% &f(Selected)" with lore "" and "&3&lInfo&7:%nl%  &7⤳ Own: &f%{_own}% %nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {Tags::%loop-value%}%&8]&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select" with enchants flag hidden
+				else:
+					set {_own} to "&aTrue" if {_player} has permission "tag.%uncolored {Tags::%loop-value%}%"
+					set {_own} to "&cFalse" if {_player} does not have permission "tag.%uncolored {Tags::%loop-value%}%"
+					set slot {_slot}-1 of {_gui} to a name tag named colored {Tags::%loop-value%} with lore "" and "&3&lInfo&7:%nl%  &7⤳ Own: &f%{_own}% %nl%  &7⤳ Example: %{_player}'s prefix% &f| %{_player}% &8[%colored {Tags::%loop-value%}%&8]&7: %{chatColor::%{_player}'s uuid%}%Hello!%nl%%nl%&7Click To Select"
+			else:
+				stop loop
+		else:
+			stop loop
+	open {_gui} to {_player}
+	
+on inventory click:
+	if event-inventory's name = "&7[&3&lE&b&lZ&7] &3&lTags":
+		cancel event
+		if clicked slot != {@bottomSlots} or 39 or 40 or 41:
+			if "%item%" != "<none>":
+				set {_item} to item's name
+				replace all "(Selected)" with "" in {_item}
+				if player has permission "tag.%uncolored {_item}%":
+					applyTag(player, {_item})
+					openTagsGUI(player)
+					send "&aApplied the tag!"
+				else:
+					send "&cYou dont own this tag!"
+		else if clicked slot = 39:
+			removeTag(player)
+			openTagsGUI(player)
+		else if clicked slot = 41:
+			openPlayerTags(player)
+			
+on inventory click:
+	if event-inventory's name = "&7[&3&lE&b&lZ&7] &3&lTags &7> &c&lYour Tags":
+		cancel event
+		if clicked slot != {@bottomSlots} or 39 or 40 or 41:
+			if "%item%" != "<none>":
+				set {_item} to item's name
+				replace all "(Selected)" with "" in {_item}
+				if player has permission "tag.%uncolored {_item}%":
+					applyTag(player, {_item})
+					openPlayerTags(player)
+					send "&aApplied the tag!"
+				else:
+					send "&cYou dont own this tag!"
+		else if clicked slot = 39:
+			removeTag(player)
+			openPlayerTags(player)
+		else if clicked slot = 41:
+			openTagsGUI(player)
+		
+	

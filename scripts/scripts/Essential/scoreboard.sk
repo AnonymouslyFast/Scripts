@@ -1,0 +1,49 @@
+function scoreboard(p: player):
+	set title of {_p}'s scoreboard to "&3&lEcoZero  &f|  (&b%amount of online players%/%max players%&f)"
+	set line 13 of {_p}'s scoreboard to ""
+	set line 12 of {_p}'s scoreboard to "&3&l%{_p}%"
+	set line 11 of {_p}'s scoreboard to "  &bBalance &f&2&l$&f%format({balance::%{_p}'s uuid%}) ? 0%"
+	set line 10 of {_p}'s scoreboard to "  &bKills &f%{kills::%{_p}'s uuid%} ? 0%"
+	set line 9 of {_p}'s scoreboard to "  &bDeaths &f%{deaths::%{_p}'s uuid%}%"
+	set line 8 of {_p}'s scoreboard to "  &bK/D &f%{kills::%{_p}'s uuid%}/{deaths::%{_p}'s uuid%}%"
+	set {_e} to "&c/nation help"
+	if {_p} has permission "nat":
+		if {nation::%{_p}'s uuid%} is set:
+			set line 7 of {_p}'s scoreboard to ""
+			set line 6 of {_p}'s scoreboard to "&3&l%{nation::%{_p}'s uuid%} ? {_e}%"
+			set line 5 of {_p}'s scoreboard to "  &bKills: &f%{nations::%{nation::%{_p}'s uuid%}%::kills}%"
+			set line 4 of {_p}'s scoreboard to "  &bDeaths: &f%{nations::%{nation::%{_p}'s uuid%}%::deaths}%"
+			set line 3 of {_p}'s scoreboard to "  &bK/D: &f%{natKD::%{nation::%{_p}'s uuid%}%}%"
+			set line 2 of {_p}'s scoreboard to ""
+			set line 1 of {_p}'s scoreboard to "&3&lEco&b&lZero.minehut.gg"
+			stop
+	set line 2 of {_p}'s scoreboard to ""
+	set line 1 of {_p}'s scoreboard to "&3&lEco&b&lZero.minehut.gg"
+
+
+on join:
+	if {scoreboard::%player's uuid%} is not set:
+		set {scoreboard::%player's uuid%} to true
+	if {deaths::%player's uuid%} is not set:
+		set {deaths::%player's uuid%} to 0
+	if {kills::%player's uuid%} is not set:
+		set {kills::%player's uuid%} to 0
+	while player is online:
+		scoreboard(player)
+		wait 1 tick
+		
+		
+on death:
+	if attacker is a player:
+		victim is a player
+		add 1 to {deaths::%victim's uuid%}
+		add 1 to {kills::%attacker's uuid%}
+	else:
+		add 1 to {deaths::%victim's uuid%}
+	
+on respawn:
+	teleport player to {spawn}
+	
+			
+
+	

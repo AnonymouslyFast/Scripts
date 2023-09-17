@@ -1,0 +1,11 @@
+import:
+	nl.marido.deluxecombat.api.DeluxeCombatAPI
+
+on region enter:
+	"%event-region%" contains "spawn" or "netherspawn"
+	set {_api} to new DeluxeCombatAPI()
+	if {_api}.isInCombat(player.getPlayer()):
+		send "&f[&3&lE&b&lZ&f] &7You cannot go into this region while in &cCombat&7!"
+		push player backwards
+		cancel event
+	

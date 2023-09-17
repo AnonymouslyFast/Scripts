@@ -1,0 +1,71 @@
+on right click:
+	if uncolored name of tool of player contains "Sword of Titans":
+		if player is not sneaking:
+			if difference between now and {-player::sword_of_titans::%player's uuid%::right_click} is less than 7 seconds:
+				{-player::sword_of_titans::%player's uuid%::right_click} is set:
+					send "&cPlease wait a bit before using this ability again!" to player
+					stop
+			set {-player::sword_of_titans::%player's uuid%::right_click} to now
+			set {_l} to location 0.75 blocks below head location of player
+			set {_v} to vector from yaw player's yaw and pitch player's pitch
+			play sound "block.note_block.pling" at volume 5 and pitch 1.5 to all players in radius 20 of {_l}
+			loop 20 times:
+				set standard length of {_v} to loop-value / 2
+				lerp 10 of dust using dustOption(green, 2) at {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(green, 2) at location 1 meters left of {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(green, 2) at location 1 meters right of {_l} ~ {_v} with extra 0
+			wait 1.5 second
+			play sound "block.note_block.pling" at volume 5 and pitch 1 to all players in radius 20 of {_l}
+			loop 20 times:
+				set standard length of {_v} to loop-value / 2
+				lerp 10 of dust using dustOption(orange, 2) at {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(orange, 2) at location 1 meters left of {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(orange, 2) at location 1 meters right of {_l} ~ {_v} with extra 0
+			wait 1.5 second
+			loop 20 times:
+				set standard length of {_v} to loop-value / 2
+				lerp 10 of dust using dustOption(red, 2) at {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(red, 2) at location 1 meters left of {_l} ~ {_v} with extra 0
+				lerp 10 of dust using dustOption(red, 2) at location 1 meters right of {_l} ~ {_v} with extra 0
+				lerp 3 of end rod at {_l} ~ {_v} with extra 0.05
+				lerp 3 of end rod at location 1 meters left of {_l} ~ {_v} with extra 0.05
+				lerp 3 of end rod at location 1 meters right of {_l} ~ {_v} with extra 0.05
+			loop 10 times:
+				set standard length of {_v} to loop-value
+				loop all players in radius 1.5 of {_l} ~ {_v} where [input is not player]:
+					gamemode of loop-player is survival or adventure
+					damage loop-player by 5 hearts
+			play sound "item.trident.thunder" at volume 5 and pitch 0.7 to all players in radius 20 of {_l}
+		else:
+			if difference between now and {-player::sword_of_titans::%player's uuid%::sneak_right_click} is less than 12 seconds:
+				{-player::sword_of_titans::%player's uuid%::sneak_right_click} is set:
+					send "&cPlease wait a bit before using this ability again!" to player
+					stop
+			set {-player::sword_of_titans::%player's uuid%::sneak_right_click} to now
+			set {_l} to location 1 block above location of player
+			set {_pitch} to 0.3
+			loop 45 times:
+				add 0.05 to {_pitch}
+				set {_v} to cylindrical vector radius 2, yaw loop-value * 8, height 0.1
+				lerp 0 of happy villager at {_l} ~ {_v}
+				play sound "block.note_block.pling" at volume 5 and pitch {_pitch} to all players in radius 10 of {_l}
+				wait 1 tick
+			loop 180 times:
+				set {_v} to cylindrical vector radius 2, yaw loop-value * 2, height 0.1
+				lerp 0 of happy villager at {_l} ~ {_v}
+			heal player by 10 hearts
+			loop 3 times:
+				play sound "block.note_block.chime" at volume 5 and pitch 1 to all players in radius 10 of {_l}
+				wait 0.25 seconds
+				
+on left click:
+	if uncolored name of held item of player contains "Sword of Titan":
+		if player is sneaking:
+			if difference between now and {-player::sword_of_titans::%player's uuid%::left_click} is less than 20 seconds:
+				{-player::sword_of_titans::%player's uuid%::left_click} is set:
+					send "&cPlease wait a bit before using this ability again!" to player
+					stop
+			set {-player::sword_of_titans::%player's uuid%::left_click} to now
+			loop all players in radius 7 of player where [input is not player]:
+				apply potion of blindness of tier 5 without any particles to loop-player for 5 seconds
+			play sound "ambient.nether_wastes.mood" at volume 5 and pitch 1 to all players in radius 7 of player

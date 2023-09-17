@@ -1,0 +1,98 @@
+on load:
+	set team prefix of team named "a-owner" to "&c&lOwner&f "
+	set team prefix of team named "b-moderator" to "&2&lModerator&f "
+	set team prefix of team named "d-helper" to "&9&lHelper&f"
+	set team prefix of team named "e-dev" to "&9&lDeveloper&f"
+	set team prefix of team named "c-builder" to "&2&lBuilder&f "
+	
+	set team prefix of team named "5-void" to "&0&k|&8&lVOID&0&k|&f "
+	
+	set team prefix of team named "g-godly" to "&c&lGodly&f "
+	set team prefix of team named "h-Legendary" to "&e&lLegendary&f "
+	set team prefix of team named "i-Mythic" to "&d&lMythic&f "
+	set team prefix of team named "j-hacker" to "&4&lHacker&f "
+	set team prefix of team named "k-astronaut" to "&3&lAstronaut&f "
+	set team prefix of team named "l-knight" to "&f&lKnight&f "
+	set team prefix of team named "m-miner" to "&8&lMiner&f "
+	
+	set team prefix of team named "n-mystic" to "%getMysticPrefix()%"
+	set team prefix of team named "o-heroic" to "&4&lHeroic&f "
+	set team prefix of team named "p-mvp+" to "&3&lMVP+&f "
+	set team prefix of team named "q-mvp" to "&3&lMVP&f "
+	set team prefix of team named "r-vip" to "&6&lVIP&f "
+	
+	set team prefix of team named "z-default" to "&7&lDefault&f "
+	
+	
+	
+function RankPlayer(p: player):
+	if {_p}'s group is "owner":
+		set {_t} to team named "a-owner" 
+	else if {_p}'s group is "moderator":
+		set {_t} to team named "b-moderator"
+	else if {_p}'s group is "builder":
+		set {_t} to team named "c-builder" 
+	else if {_p}'s group is "helper":
+		set {_t} to team named "d-helper"
+	else if {_p}'s group is "developer":
+		set {_t} to team named "e-dev" 
+	
+	else if {_p}'s group is "void":
+		set {_t} to team named "f-void" 
+		
+	else if {_p}'s group is "godly":
+		set {_t} to team named "g-godly"
+	else if {_p}'s group is "legendary":
+		set {_t} to team named "h-legendary"
+	else if {_p}'s group is "mythic":
+		set {_t} to team named "i-mythic" 
+	else if {_p}'s group is "hacker":
+		set {_t} to team named "j-hacker"
+	else if {_p}'s group is "astronaut":
+		set {_t} to team named "k-astronaut"
+	else if {_p}'s group is "knight":
+		set {_t} to team named "l-knight"
+	else if {_p}'s group is "miner":
+		set {_t} to team named "m-miner"
+		
+		
+	else if {_p}'s group is "mystic":
+		set {_t} to team named "n-mystic"
+	else if {_p}'s group is "heroic":
+		set {_t} to team named "o-heroic"
+	else if {_p}'s group is "mvp+":
+		set {_t} to team named "p-mvp+" 
+	else if {_p}'s group is "mvp":
+		set {_t} to team named "q-mvp"
+	else if {_p}'s group is "vip":
+		set {_t} to team named "r-vip"	
+		
+	else if {_p}'s group is "default":
+		set {_t} to team named "z-default"
+	add {_p} to team entries of {_t}
+on join:
+	RankPlayer(player)
+	
+function fixTab():
+	loop all players:
+		RankPlayer(loop-player)
+	broadcast "&aTab is fixed"
+
+on join:
+	while player is online:
+		RankPlayer(player)
+		set {_e} to team of player
+		set player's tablist header to "&3&lEco&b&lZero%nl%" 
+		if {bounty::%player's uuid%} is set:
+			if {tag::%player's uuid%} is set:
+				set player's tablist name to "%team prefix of {_e}% &f%player% &8[&f%colored {tag::%player's uuid%}%&8] &e%player's ping% &c&lBOUNTY"
+			else:
+				set player's tablist name to "%team prefix of {_e}% &f%player% &e%player's ping% &c&lBOUNTY"
+		else: 
+			if {tag::%player's uuid%} is set:
+				set player's tablist name to "%team prefix of {_e}% &f%player% &8[&f%colored {tag::%player's uuid%}%&8] &e%player's ping%"
+			else:
+				set player's tablist name to "%team prefix of {_e}% &f%player% &e%player's ping%"
+		set player's tablist footer to "%nl% &b&lTPS&8: &f%tps from the last minute% %nl% &b&lOnline&8: &f%amount of online players%/%max players%%nl%&3&lEco&b&lZero.minehut.gg%nl%%nl%&7&3&l/discord &m     &r &b&l/verify &7"
+		wait 1 tick
+		

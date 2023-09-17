@@ -1,0 +1,45 @@
+command afk:
+	permission: skript.afk
+	permission message: &cNo permission!
+	trigger:
+		if {afk::%player's uuid%} is set:
+			clear {afk::%player's uuid%} 
+			clear {tag::%player's uuid%}
+			set {tag::%player's uuid%} to {Lasttag::%player's uuid%} if {Lasttag::%player's uuid%} is set
+			broadcast "&7%player% is out of &cAFK!"
+		else:
+			set {afk::%player's uuid%} to true
+			set {Lasttag::%player's uuid%} to {tag::%player's uuid%} if {tag::%player's uuid%} is set
+			set {tag::%player's uuid%} to "&c&lAFK"
+			broadcast "&7%player% is now &cAFK!"
+			set {_x} to player's x-coord
+			set {_y} to player's y-coord
+			set {_z} to player's z-coord
+			while {afk::%player's uuid%} is set:
+				if player's x-coord != {_x}:
+					execute player command "afk"
+				else if player's y-coord != {_y}:
+					execute player command "afk"
+				else if player's z-coord != {_z}:
+					execute player command "afk" 
+				wait 1 tick
+				
+every 15 minutes:	
+	loop all players:
+		"%region at loop-player%" contains "afk"
+		execute console command "moneynote give %loop-player% 1000"
+		execute console command "crate key give %loop-player% rare 1"
+	broadcast "&f[&3&lE&b&lZ&f] Gave all players in &d/warp afk &fprizes!"
+	
+function test():
+	loop all players:
+		set {_r::*} to regions at loop-player
+		broadcast {_r::*}
+		if "%region at loop-player%"  contains "afk":
+			broadcast "e"
+			execute console command "moneynote give %loop-player% 1000"
+			execute console command "crate key give %loop-player% rare 1"
+	broadcast "&f[&3&lE&b&lZ&f] Gave all players in &d/warp afk &fprizes!"
+					
+			
+			

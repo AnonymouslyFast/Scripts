@@ -1,0 +1,55 @@
+options:
+	prefix: &c&lBountys
+
+command bounty [<string>] [<player>] [<number>]:
+	trigger:
+		if arg-1 = "create":
+			if arg-2 is set:
+				if arg-3 is set:
+					if arg-2 is online:
+						set {_amount} to arg-3 
+						if {_amount} < 1:
+							send "{@prefix} &8&l>> no"
+							stop
+						if {_amount} <= {balance::%player's uuid%}:
+							send "{@prefix} &8&l>> &fBounty Created!"
+							createBounty(player, arg-2, {_amount})
+						else:
+							send "{@prefix} &8&l >> &fYou don't have enough money for that!"
+					else:
+						send "{@prefix} &8&l >> &fThat player is not online!"
+				else:
+					send "{@prefix} &8&l>> &fPlease provide the amount of money you want to put on the bounty!"
+			else:
+				send "{@prefix} &8&l>> &fPlease provide the player you want to put the bounty on!"
+		
+		else if arg-1 = "remove":
+			if player has permission "bounty.remove":
+				if arg-2 is set:
+					if arg-2 is online:
+						removeBounty(arg-2, "expired", player)
+					else:
+						send "&c&lBountys &8&l>> &fThat player is not online/does not exist!"
+				else:
+					send "&c&lBountys &8&l>> &fPlease provide a player in argument 2"
+			else:
+				send "&cNo permission!"
+		else:
+			send "&c&lBounty Help&7:%nl%  ⤳ &f/bounty create <player> <amount of money>%nl%  &7⤳ &3&lSTAFF &f/bounty remove <player>"
+			
+			
+on tab complete of "/bounty":
+	set tab completions for position 1 to "create" and "remove"
+	if tab arg-1 = "create":
+		set tab completions for position 2 to all players
+		set tab completions for position 3 to "10", "69", "100", "420", "1000"
+	else if tab arg-1 = "remove":
+		set tab completions for position 2 to all players
+	
+							
+			
+
+
+				
+			
+					

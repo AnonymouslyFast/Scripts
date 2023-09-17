@@ -1,0 +1,15 @@
+command stopdrop:
+	trigger:
+		if {stopdrop::%player's uuid%} is not true:
+			set {stopdrop::%player's uuid%} to true
+			send "&a Stop drop is ON"
+		else:
+			set {stopdrop::%player's uuid%} to false
+			send "&a Stop drop is &cOFF"
+			
+			
+on drop:
+	if {stopdrop::%player's uuid%} is true:
+		cancel event
+		send "&aSTOP DROP &8&l>> &fCant drop this! To turn off do /stopdrop"
+		

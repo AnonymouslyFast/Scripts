@@ -1,0 +1,49 @@
+on join:
+	if {BetaPlayers::*} contains player's uuid:
+		if player does not have permission "tag.og":
+			if player does not have permission "op":
+				wait 1 second
+				execute console command "lp user %player% permission set tag.og true"
+				send "&3&lE&b&lZ &8&l>> &fThanks for player Beta! &7Here is the &4&lOG &7tag as a thanks. &d(/tags)"
+	if {players::*} does not contain player's uuid:
+		add player's uuid to {players::*}
+		add 1 to {uniquejoins}
+		set join message to "&f[&a+&f] %player% &b[##%{uniquejoins}%]"
+		giveStarterGear(player)
+		wait 1 tick
+		teleport player to {spawn}
+		send ""
+		send "&8&l--------------------------------%nl%"
+		send "  Welcome to &3&lEco&b&lZero &f!!"
+		send "    ⤳ &bDiscord: &f/discord"
+		send "    ⤳ &bRules: &f/rules"
+		send "    ⤳ &bVerify: &f/verify"
+		send "    ⤳ &bStore: &f/buy%nl%"
+		send "&8&l--------------------------------"
+		send ""
+		log "%player%" to "beta_testers.log"
+		#vars go here
+		wait 2 seconds
+		startTutorial(player)
+	else:
+		set join message to "&f[&a+&f] %player%"
+		wait 1 tick
+		send ""
+		send "&8&l--------------------------------"
+		send "  Welcome Back to &3&lEco&b&lZero &f!!"
+		send "    ⤳ &bDiscord: &f/discord"
+		send "    ⤳ &bRules: &f/rules"
+		send "    ⤳ &bVerify: &f/verify"
+		send "    ⤳ &bStore: &f/buy"
+		send "&8&l--------------------------------"
+		send ""
+
+function giveStarterGear(player: player):
+	give a leather helmet named "&3&lWooden helmet &f[&b1&f]" to {_player}
+	give a leather chestplate named "&3&lWooden chestplate &f[&b1&f]" to {_player}
+	give a leather leggings named "&3&lWooden leggings &f[&b1&f]" to {_player}
+	give a leather boots named "&3&lWooden boots &f[&b1&f]" to {_player}
+	give a wooden sword named "&3&lWooden sword &f[&b1&f]" to {_player}
+	give a wooden pickaxe named "&3&lWooden pickaxe &f[&b1&f]" to {_player}
+	give a wooden axe named "&3&lWooden axe &f[&b1&f]" to {_player}
+	give 16 bread to {_player}

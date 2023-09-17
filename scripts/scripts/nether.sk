@@ -1,0 +1,15 @@
+on damage:
+	victim's world = world("nether2")
+	if damage cause = magma:
+		cancel event
+		
+on block break:
+	player's world = world("nether2")
+	player's gamemode is not creative
+	event is not canceled
+	cancel drops
+	give player 1 of block
+	
+on world change:
+	if player has permission "skript.fly":
+		execute player command "fly"

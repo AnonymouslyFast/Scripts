@@ -1,0 +1,328 @@
+options:
+	prefix: &f[&3&lNations&f]
+	
+	
+on load:
+	if {nationsBlocked::*} is not set:
+		set {nationsBlocked::*} to ""
+	if {nations::*} is not set:
+		set {nations::*} to ""
+
+
+
+#                Creates a nations                #
+function createNation(player: player, name: string):
+	if {nationsBlocked::*} does not contain {_name}:
+		set {_char} to number of lowercase chars in {_name} + number of uppercase chars in {_name}
+		if {_char} is between 4 and 11:
+			if {nations::*} does not contain {_name}:
+				if {nation::%{_player}'s uuid%} is not set:
+					set {nations::%{_name}%::leaders::*} to {_player}'s uuid
+					set {nations::%{_name}%::members::*} to ""
+					set {nations::%{_name}%::kills} to 0
+					set {nations::%{_name}%::deaths} to 0
+					set {nations::%{_name}%::bank} to 0
+					set {nation::%{_player}'s uuid%} to {_name}
+					set {natKD::%{_name}%} to 0
+					set {nationPermissions::%{_player}'s uuid%::*} to "Admin"
+					add {_name} to {nations::*}
+					broadcast "{@prefix} &b%{_player}% &fJust created the &a%{_name}%&f Nation!"
+				else:
+					send "{@prefix} &fYou cannot create a nation since you're already in one! &bDo /nation leave to leave your nation." to {_player}
+			else:
+				send "{@prefix} &fThe nation name of &b""%{_name}%"" &fis already in use! Please pick another name." to {_player}
+		else:
+			send "{@prefix} &fPlease have at minimum of 4 characters and maximum 11 characters in your nation name!" to {_player}
+	else:
+		send "{@prefix} &fThe nation name of &b""%{_name}%"" &fis blocked please use another name!" to {_player}
+
+
+
+
+
+#                Leaves a nation                #
+function leaveNation(player: player, name: string):
+	if {nation::%{_player}'s uuid%} is set:
+		if {nations::%{_name}%::leaders::*} does not contain {_player}'s uuid:
+			remove {_player}'s uuid from {nations::%{_name}%::members::*}
+			clear line 7 of {_player}'s scoreboard
+			clear line 6 of {_player}'s scoreboard
+			clear line 5 of {_player}'s scoreboard
+			clear line 4 of {_player}'s scoreboard
+			clear line 3 of {_player}'s scoreboard
+			clear {nation::%{_player}'s uuid%}
+			clear {nationPermissions::%{_player}'s uuid%::*}
+			send "{@prefix} &fLeft the &b%{_name}% &fnation." to {_player}
+			send "{@prefix} &b%{_player}% &fhas left your nation." to all players where [{nation::%input's uuid%} is {_name}]
+		else:
+			send "{@prefix} &fYou cannot leave your own nation." to {_player} 
+				
+
+
+
+#                Disbands a nation                #
+function disbandNation(player: player, name: string):
+	if {nations::%{_name}%::leaders::*} contains {_player}'s uuid:
+		if size of {nations::%{_name}%::leaders::*} is 1:
+			loop {nations::%{_name}%::members::*}:
+				remove loop-value from {nations::%{_name}%::members::*}
+				clear line 7 of loop-value's scoreboard
+				clear line 6 of loop-value's scoreboard
+				clear line 5 of loop-value's scoreboard
+				clear line 4 of loop-value's scoreboard
+				clear line 3 of loop-value's scoreboard
+				clear {nation::%loop-value%}
+			clear line 7 of {_player}'s scoreboard
+			clear line 6 of {_player}'s scoreboard
+			clear line 5 of {_player}'s scoreboard
+			clear line 4 of {_player}'s scoreboard
+			clear line 3 of {_player}'s scoreboard
+			clear {nations::%{_name}%::members::*}
+			clear {nationPermissions::%{_player}'s uuid%::*}
+			clear {nations::%{_name}%::*}
+			clear {natKD::%{_name}%}
+			remove {_name} from {nations::*}
+			clear {nation::%{_player}'s uuid%}
+			broadcast "{@prefix} &b%{_name}% &fhas been &cdisbanded"
+	else:
+		send "{@prefix} &fYou're not a leader of &b%{_name}%&f!" to {_player}
+		
+
+
+
+
+#               Invites a player to a nation                #
+function nationInvite(player: player, vic: player):
+	if {nation::%{_player}'s uuid%} is set:
+		if {nation::%{_vic}'s uuid%} is not set:
+			if {nationPermissions::%{_player}'s uuid%::*} contains "Invite_Players" or "Admin":
+				send "{@prefix} &b%{_player}% &fSent a invite request to &a%{_vic}%&f! (expires in 1 minute)" to all players where [{nation::%input's uuid%} = {nation::%{_player}'s uuid%}]
+				set {nationInvite::%{_vic}'s uuid%} to {nation::%{_player}'s uuid%}
+				send "{@prefix} &b%{_player}% &fsent you a invite to join &a%{nation::%{_player}'s uuid%}%&f. To join do /nation join, this will automatically expire in 1 minute" to {_vic}
+				wait 1 minute
+				{_vic} is online
+				{nationInvite::%{_vic}'s uuid%} is set
+				clear {nationInvite::%{_vic}'s uuid%}
+				send "{@prefix} &fInvite for &b%{_vic}% &fto join the nation has expired." to all players where [{nation::%input's uuid%} = {nation::%{_player}'s uuid%}]
+				send "{@prefix} &fInvite to join &b%{nation::%{_player}'s uuid%}% &fhas expired." to {_vic}
+			else:
+				send "{@prefix} &fYou do not have the permission &b""Invite_Players""! Tell your Nation leader to give you this perm to invite players." to {_player}
+		else:
+			send "{@prefix} &fThat player is already in a Nation!" to {_player}
+	else:
+		send "{@prefix} You're not in a nation to invite to!" to {_player}
+
+
+
+
+#               Joining a nation process                #
+function nationJoin(player: player, nat: string):
+	add {_player}'s uuid to {nations::%{_nat}%::members::*}
+	set {nation::%{_player}'s uuid%} to {_nat}
+	send "{@prefix} &b%{_player}% &fhas joined your nation!" to all players where [{nation::%input's uuid%} = {_nat}]
+
+
+
+
+
+#                Makes and Opens a Nation GUI to player                #
+function openNationGUI(player: player):
+	set {_gui} to a chest inventory with 3 rows named "{@prefix} &fMenu"
+	set slots 0, 2, 6, 8, 10, 12, 14, 16, 18, 20, 24, 26 of {_gui} to a blue stained glass pane named " "
+	set slots 1, 3, 5, 7, 9, 13, 17, 19, 21, 23, 25 of {_gui} to a light blue stained glass pane named " "
+	set slot 11 of {_gui} to a beacon named "&3&lNations &6&lTop" with lore "&7Click to go to the &3&lNations &6&lTop &7GUI"
+	set slot 4 of {_gui} to {_player}'s skull named "&6&lYour &3&lNation" with lore "&7Click to go to &6&lYour &3&lNation&7's GUI"
+	set {_e} to "&cNone"
+	set {_e} to {nation::%{_player}'s uuid%} if {nation::%{_player}'s uuid%} is set
+	set slot 15 of {_gui} to a nether star named "&3&lInfo" with lore "  &7↪ &bNation&f: %{_e}%"
+	set slot 22 of {_gui} to a barrier named "&cLeave GUI?" with lore "&7click to leave the GUI"
+	open {_gui} to {_player}
+	
+
+
+
+	
+#                Makes and Opens a Nation Top GUI to player                #
+function openNationTopGUI(player: player):
+	set {_gui} to chest inventory with 4 rows named "{@prefix} &6&lTop"
+	set slot 4 of {_gui} to a oak sign named "&3&lInformation" with lore "&7Reloads every 10 minutes%nl%&7Sorted by: K/D"
+	set slots 0, 2, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34 of {_gui} to a blue stained glass pane named " "
+	set slots 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 25, 35 of {_gui} to a light blue stained glass pane named " "
+	set slot 27 of {_gui} to a feather named "&3&lBack?" with lore "&7Click to go back to {@prefix} &fMenu"
+	
+	set {_1} to {nations::%{nationTop::1}%::leaders::1} parsed as a offline player
+	set {_2} to {nations::%{nationTop::2}%::leaders::1} parsed as a offline player
+	set {_3} to {nations::%{nationTop::3}%::leaders::1} parsed as a offline player
+	set {_4} to {nations::%{nationTop::4}%::leaders::1} parsed as a offline player
+	set {_5} to {nations::%{nationTop::5}%::leaders::1} parsed as a offline player
+	set {_6} to {nations::%{nationTop::6}%::leaders::1} parsed as a offline player
+	
+	loop 6 times:
+		set {_%loop-value%M} to ""
+		set {_%loop-value%M} to "%getNationMembers({nationTop::%loop-value%})%" if getNationMembers({nationTop::%loop-value%}) is set
+		replace all " and " with ", " in {_%loop-value%M}
+	
+	
+	set slot 13 of {_gui} to a player head named "&3&l1: &fNONE" with lore "&7No one claimed this spot!"
+	set slot 21 of {_gui} to a player head named "&3&l2: &fNONE" with lore "&7No one claimed this spot!"
+	set slot 23 of {_gui} to a player head named "&3&l3: &fNONE" with lore "&7No one claimed this spot!"
+	set slot 29 of {_gui} to a player head named "&3&l4: &fNONE" with lore "&7No one claimed this spot!"
+	set slot 31 of {_gui} to a player head named "&3&l5: &fNONE" with lore "&7No one claimed this spot!"
+	set slot 33 of {_gui} to a player head named "&3&l6: &fNONE" with lore "&7No one claimed this spot!"
+	
+	set slot 13 of {_gui} to {_1}'s skull named "&3&l1: &a%{nationTop::1}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::1}%}% %nl%%nl%&3&lLeader:%nl% &7%{_1}% %nl%%nl%&3&lMembers:%nl% &7%{_1M}%" if {_1} is set
+	set slot 21 of {_gui} to {_2}'s skull named "&3&l2: &a%{nationTop::2}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::2}%}% %nl%%nl%&3&lLeader: &7%{_2}% %nl%%nl%&3&lMembers:%nl% &7%{_2M}%" if {_2} is set
+	set slot 23 of {_gui} to {_3}'s skull named "&3&l3: &a%{nationTop::3}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::3}%}% %nl%%nl%&3&lLeader: &7%{_3}% %nl%%nl%&3&lMembers:%nl% &7%{_3M}%" if {_3} is set
+	set slot 29 of {_gui} to {_4}'s skull named "&3&l4: &a%{nationTop::4}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::4}%}% %nl%%nl%&3&lLeader: &7%{_4}% %nl%%nl%&3&lMembers:%nl% &7%{_4M}%" if {_4} is set
+	set slot 31 of {_gui} to {_5}'s skull named "&3&l5: &a%{nationTop::5}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::5}%}% %nl%%nl%&3&lLeader: &7%{_5}% %nl%%nl%&3&lMembers:%nl% &7%{_5M}%" if {_5} is set
+	set slot 33 of {_gui} to {_6}'s skull named "&3&l6: &a%{nationTop::6}%" with lore "%nl%&bKD: &f%{natKD::%{nationTop::6}%}% %nl%%nl%&3&lLeader: &7%{_6}% %nl%%nl%&3&lMembers:%nl% &7%{_6M}%" if {_6} is set
+
+	open {_gui} to {_player}
+
+
+
+
+
+#                Gets the nations in the given nation               #
+function getNationMembers(nat: string) :: objects:
+	set {_return::1} to ""
+	loop {nations::%{_nat}%::members::*}:
+		add loop-value parsed as a offline player to {_return::*} if loop-value parsed as a offline player is set
+	remove {_return::1} from {_return::*}
+	return {_return::*}
+
+
+
+#                Syncs the nation top                #
+function syncNationTop():
+	set {_e::*} to sorted indices of {natKD::*} in descending order
+	loop 6 times:
+		set {nationTop::%loop-value%} to {_e::%loop-value%}
+	
+	
+
+#                Kicks a player from a nation                #
+function nationKickPlayer(player: player, vic: offline player):
+	set {_nat} to {nation::%{_player}'s uuid%}
+	if {nationPermissions::%{_player}'s uuid%::*} contains "Kick_Players" or "Admin":
+		if {nation::%{_vic}'s uuid%} = {nation::%{_player}'s uuid%}:
+			if {nations::%{nation::%{_player}'s uuid%}%::leaders::*} does not contain {_vic}'s uuid:
+				remove {_vic}'s uuid from {nations::%{nation::%{_player}'s uuid%}%::members::*}
+				clear {nation::%{_vic}'s uuid%}
+				clear line 7 of {_vic}'s scoreboard
+				clear line 6 of {_vic}'s scoreboard
+				clear line 5 of {_vic}'s scoreboard
+				clear line 4 of {_vic}'s scoreboard
+				clear line 3 of {_vic}'s scoreboard
+				send "{@prefix} You were kicked from the &b%{nation::%{_player}'s uuid%}% &fNation." to {_vic}
+				send "{@prefix} &b%{_player}% &fhas kicked &a%{_vic}% &ffrom the Nation." to all players where [{nation::%input's uuid%} is {nation::%{_player}'s uuid%}]
+			else:
+				send "{@prefix} &fYou cannot kick a Leader!" to {_player}
+		else:
+			send "{@prefix} &fThe given player is not in your Nation." to {_player}
+	else:
+		send "{@prefix} &fYou do not have the permission &b""Kick_Players""! Tell your Nation leader to give you this perm to kick players." to {_player}
+
+	
+	
+#                Makes and Opens a Your Nation GUI               #
+function openPlayerNationGUI(player: player):
+	set {_nat} to {nation::%{_player}'s uuid%}
+	set {_gui} to chest inventory with 4 rows named "&6&lYour {@prefix}"
+	set slots numbers between 1 and 7, 10, 12, 14, 16, numbers between 19 and 26 of {_gui} to a light blue stained glass pane named " "
+	set slots numbers between 27 and 30, numbers between 32 and 35 of {_gui} to a blue stained glass pane named " "
+	set slot 0 of {_gui} to a netherite sword named "&c&lNation Kills" with lore "&7Nation kills: &f%{nations::%{_nat}%::kills}%"
+	set slot 8 of {_gui} to a green dye named "&2&lNation Money" with lore "&7Nation Money: &2&l$&f0"
+	set slot 9 of {_gui} to a red dye named "&4&lNation Deaths" with lore "&7Nation Deaths: &f%{nations::%{_nat}%::deaths}%"
+	set slot 17 of {_gui} to a eye of ender named "&a&lNation Bank" with lore "&7Click to open Nation bank!"
+	set slot 18 of {_gui} to a netherite axe named "&5&lNation KD" with lore "&7Nation K/D: &f%{natKD::%{_nat}%}%"
+	set slot 11 of {_gui} to a oak sign named "&6&lYour &3&lNation Role" with lore "&7Your Nation Role: &7&lMember" 
+	set slot 11 of {_gui} to a oak sign named "&6&lYour &3&lNation Role" with lore "&7Your Nation Role: &c&lLeader" if {nations::%{_nat}%::leaders::*} contains {_player}'s uuid
+	set {_m} to size of {nations::%{_nat}%::leaders::*} + size of {nations::%{_nat}%::members::*}
+	set slot 13 of {_gui} to a nether star named "&3&lNations &aStats" with lore "  &7Members: &f%{_m}%"
+	set slot 15 of {_gui} to a feather named "&3&lNation &9&lPermissions" with lore "&7Click to manage member's permissions."
+	set slot 31 of {_gui} to a barrier named "&c&lBack?" with lore "&7Click to go back to {@prefix} &fmenu"
+	open {_gui} to {_player}
+	
+	
+
+
+#                Makes and Opens a Nation Perms GUI               #
+function nationOpenPermissionsGUI(player: player):
+	set {_gui} to chest inventory with 6 rows named "{@prefix} &9&lPermissions"
+	set slots 0, 2, 4, 6, 8, 18, 26, 36, 44, 46, 48, 50, 52 of {_gui} to a blue stained glass pane named " "
+	set slots 1, 3, 5, 7, 9, 17, 27, 35, 45, 47, 51, 53 of {_gui} to a light blue stained glass pane named " "
+	set slot 49 of {_gui} to a barrier named "&c&lBack?" with lore "&7Click to go back to &6&lYou {@prefix} &7GUI"
+	set slots numbers between 10 and 16, numbers between 19 and 25, numbers between 28 and 34, numbers between 37 and 43 of {_gui} to a red stained glass pane named " "
+	set {_t} to 2
+	set {_name} to {nation::%{_player}'s uuid%}
+	set {_members::*} to {nations::%{_name}%::members::*}
+	remove "" from {_members::*}
+	loop 53 times:
+		if slot loop-value of {_gui} is a red stained glass pane named " ":
+			if {_members::%{_t}%} is set:
+				set {_p} to {_members::%{_t}%} parsed as offline player
+				set slot loop-value of {_gui} to {_p}'s skull named "&b%{_p}%" with lore "&7Click to edit &b%{_p}%&7's permissions"
+				add 1 to {_t}
+			else:
+				stop loop
+	open {_gui} to {_player}
+	
+	
+	
+
+#                Makes and Opens a Player Perms GUI               #
+function nationOpenPlayerPermGUI(player: player, subject: offline player):
+	set {_gui} to chest inventory with 4 rows named "&b%{_subject}%'s &9&lPerms"
+	set slots 0, 2, 4, 6, 8, 18, 26, 28, 30, 32, 34 of {_gui} to a blue stained glass pane named " "
+	set slots 1, 3, 5, 7, 9, 17, 27, 29, 33, 35 of {_gui} to a light blue stained glass pane named " "
+	set slot 31 of {_gui} to a barrier named "&c&lBack?" with lore "&7Click to go back to {@prefix} &9&lPermissions &7GUI"
+	set slots numbers between 10 and 16, numbers between 19 and 25 of {_gui} to a red stained glass pane named " "
+	set {_perm} to "&7None"
+	set {_perm} to "%{nationPermissions::%{_subject}'s uuid%::*}%" 
+	replace all " and " with "%nl%&7" in {_perm} 
+	set {_e} to "&7None"
+	set slot 4 of {_gui} to {_subject}'s skull named "&b%{_subject}%'s &9&lPermissions" with lore "&7%{_perm::*} ? {_e}%"
+	set slot 10 of {_gui} to a book and quill named "&aInvite Members" with lore "&7Click to &2add &7the permission to the player!"
+	set slot 11 of {_gui} to a string named "&9Manage Permissions" with lore "&7Click to &2add &7the permission to the player!"
+	set slot 12 of {_gui} to a stone sword named "&4Kick Members" with lore "&7Click to &2add &7the permission to the player!"
+	set slot 13 of {_gui} to a red dye named "&cAdmin" with lore "&7Click to &2add &7the permission to the player!"
+	
+	if {nationPermissions::%{_subject}'s uuid%::*} contains "Invite_Players":
+		set slot 10 of {_gui} to a book and quill of mending named "&aInvite Members" with lore "&7Click to &cremove &7the permission from the player!" with all flags hidden
+		
+	if {nationPermissions::%{_subject}'s uuid%::*} contains "Manage_Permissions":
+		set slot 11 of {_gui} to a string of mending named "&9Manage Permissions" with lore "&7Click to &cremove &7the permission from the player!" with all flags hidden 
+	
+	if {nationPermissions::%{_subject}'s uuid%::*} contains "Kick_Players":
+		set slot 12 of {_gui} to a stone sword of mending named "&4Kick Members" with lore "&7Click to &cremove &7the permission from the player!" with all flags hidden 
+		
+	if {nationPermissions::%{_subject}'s uuid%::*} contains "Admin":	
+		set slot 13 of {_gui} to a red dye of mending named "&cAdmin" with lore "&7Click to &cremove &7the permission from the player!" with all flags hidden 
+		
+		
+	open {_gui} to {_player}
+	
+
+
+# Getting a custom skull
+expression %item% with skull value %string%:
+  get:
+    set {_item} to expr-1
+    set {_nbt} to "{SkullOwner:{Id:[I;1,1,1,1],Properties:{textures:[{Value:""%expr-2%""}]}}}"
+    set {_item} to {_item} with nbt compound of {_nbt}
+    return {_item}
+
+
+	
+function nationOpenBankGUI(player: player):
+	set {_gui} to chest inventory with 5 rows named "{@prefix} &2&lBank"
+	set slots numbers between 0 and 8, 9, 17, 18, 26, 27, 35, numbers between 36 and 44 of {_gui} to a blue stained glass pane named " "
+	set slots numbers between 10 and 16, numbers between 19 and 25, numbers between 28 and 34 of {_gui} to a light blue stained glass pane named " "
+	set slot 40 of {_gui} to a barrier named "&c&lBack" with lore "&7Click to go back to &6&lYour {@prefix} &7GUI"
+	set slot 24 of {_gui} to a red stained glass pane named "&4&lRemove &2&lMoney" with lore "&7Click here to remove money from {@prefix} &2&lBank"
+	set slot 20 of {_gui} to a green stained glass pane named "&a&lAdd &2&lMoney" with lore "&7Click here to add money from {@prefix} &2&lBank"
+	set {_e} to {_player}'s skull named "&3&lNation's Bank" with lore "&7Your nation bank: &2&l$&f%{nations::%{nation::%{_player}'s uuid%}%::bank}%"
+	set {_e} to {_e} with skull value "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM2ZTk0ZjZjMzRhMzU0NjVmY2U0YTkwZjJlMjU5NzYzODllYjk3MDlhMTIyNzM1NzRmZjcwZmQ0ZGFhNjg1MiJ9fX0"
+	set slot 22 of {_gui} to {_e}
+	open {_gui} to {_player}

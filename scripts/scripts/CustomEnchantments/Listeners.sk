@@ -1,0 +1,205 @@
+options:
+	allowed_regions: "emerald" or "diamond" or "wood" or "coal" or "gold" or "redstone" or "stone" or "iron" or "cryobsidian" or "crimson" or "warped" or "obsidian" or "quartz" or "netherite" or "gildedbs"
+
+#Explosion
+on block break:
+	event-block is not pink glazed terracotta
+	getlvl(player's tool, "explosion") is set
+	set {_e} to getMinePoint(block)
+	if getlvl(player's tool, "explosion") = 1:
+		chance of 3.6%
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.2 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air 
+	else if getlvl(player's tool, "explosion") = 2:
+		chance of 3.8%
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.9 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air 
+	else if getlvl(player's tool, "explosion") = 3:
+		chance of 3.9%
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.9 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air 
+	else if getlvl(player's tool, "explosion") = 4:
+		chance of 4%
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.9 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air 
+	else if getlvl(player's tool, "explosion") = 5:
+		chance of 5%
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.9 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air 
+	else if getlvl(player's tool, "explosion") = 69:
+		create an explosion of force 0 at the block
+		loop all blocks in radius 1.9 of block:
+			if "%region at loop-block%" contains {@allowed_regions}:
+				add getMinePoint(loop-block) to {_e}
+				give player loop-block
+				set loop-block to air
+	if getlvl(player's tool, "explosion") is set:
+		add {_e} to {xp::%player's uuid%}
+		send action bar "&f+%{_e}%&3&lXP &f(&b%{xp::%player's uuid%}%/&3%{targetxp::%player's uuid%}%&f)" to player
+				
+				
+				
+				
+#Luck
+on block break:
+	event-block is not pink glazed terracotta
+	getlvl(player's tool, "luck") is set
+	if getlvl(player's tool, "luck") = 1:
+		chance of 3.6%
+		give player 5 of block
+		
+	else if getlvl(player's tool, "luck") = 2:
+		chance of 3.7%
+		give player 8 of block
+	else if getlvl(player's tool, "luck") = 3:
+		chance of 3.9%
+		give player 10 of block
+	else if getlvl(player's tool, "luck") = 4:
+		chance of 4%
+		give player 12 of block
+	else if getlvl(player's tool, "luck") = 5:
+		chance of 3.8%
+		give player 14 of block
+		
+		
+#Haste
+on tool change:
+	getlvl(player's tool, "haste") is set
+	set {_tool} to player's tool
+	while {_tool} is player's tool:
+		apply haste getlvl(player's tool, "haste") to player
+		wait 1 tick
+	remove haste from potion effects of player
+	
+on damage:
+	if getlvl(attacker's tool, "lightning") is 1:
+		chance of 1.5%
+		strike lightning effect at victim
+		damage victim by 2
+	else if getlvl(attacker's tool, "lightning") is 2:
+		chance of 2%
+		strike lightning at victim
+		damage victim by 2.2
+	else if getlvl(attacker's tool, "lightning") is 3:
+		chance of 2.5%
+		strike lightning effect at victim
+		damage victim by 2.4
+	else if getlvl(attacker's tool, "lightning") is 4:
+		chance of 3%
+		strike lightning effect at victim
+		damage victim by 2.6
+	else if getlvl(attacker's tool, "lightning") is 5:
+		chance of 3.5%
+		strike lightning effect at victim
+		damage victim by 2.8
+		
+		
+#Life Steal		
+on damage:
+	if getlvl(attacker's tool, "lifesteal") is 1:
+		chance of 3%
+		damage victim by 1
+		heal attacker by 1
+	else if getlvl(attacker's tool, "lifesteal") is 2:
+		chance of 3.5%
+		damage victim by 1
+		heal attacker by 1
+	else if getlvl(attacker's tool, "lifesteal") is 3:
+		chance of 4%
+		damage victim by 1
+		heal attacker by 1
+	else if getlvl(attacker's tool, "lifesteal") is 4:
+		chance of 4.5%
+		damage victim by 1
+		heal attacker by 1
+	else if getlvl(attacker's tool, "lifesteal") is 5:
+		chance of 5%
+		damage victim by 1
+		heal attacker by 1
+		
+		
+#Strength		
+on damage:
+	if getlvl(attacker's tool, "strength") is 1:
+		chance of 3%
+		damage victim by final damage/4
+	else if getlvl(attacker's tool, "strength") is 2:
+		chance of 3.5%
+		damage victim by final damage/4
+	else if getlvl(attacker's tool, "strength") is 3:
+		chance of 4%
+		damage victim by final damage/4
+	else if getlvl(attacker's tool, "strength") is 4:
+		chance of 4.5%
+		damage victim by final damage/4
+	else if getlvl(attacker's tool, "strength") is 5:
+		chance of 5%
+		damage victim by final damage/4
+		
+#Overlord
+		
+#putting it on
+on player armor change:
+	if getlvl(new armor item, "overlord") is set:
+		set player's max health to 12 if getlvl({_armor}, "overlord") is 1 
+		set player's max health to 14 if getlvl({_armor}, "overlord") is 2
+		set player's max health to 16 if getlvl({_armor}, "overlord") is 3
+		set player's max health to 18 if getlvl({_armor}, "overlord") is 4
+		set player's max health to 20 if getlvl({_armor}, "overlord") is 5
+		heal player 
+		
+#Taking it off		
+on armor change:
+	if getlvl(old armor item, "overlord") is set:
+		set player's max health to 10 
+		
+on quit:
+	set {_armor} to player's helmet if getlvl(player's helmet, "overlord") is set
+	set {_armor} to player's chestplate if getlvl(player's chestplate, "overlord") is set
+	set {_armor} to player's leggings if getlvl(player's leggings, "overlord") is set
+	set {_armor} to player's boots if getlvl(player's boots, "overlord") is set
+	set player's max health to 10 
+	
+on join:
+	set {_armor} to player's helmet if getlvl(player's helmet, "overlord") is set
+	set {_armor} to player's chestplate if getlvl(player's chestplate, "overlord") is set
+	set {_armor} to player's leggings if getlvl(player's leggings, "overlord") is set
+	set {_armor} to player's boots if getlvl(player's boots, "overlord") is set
+	set player's max health to 10 
+	if getlvl({_armor}, "overlord") is set:
+		set player's max health to 12 if getlvl({_armor}, "overlord") is 1 
+		set player's max health to 14 if getlvl({_armor}, "overlord") is 2
+		set player's max health to 16 if getlvl({_armor}, "overlord") is 3
+		set player's max health to 18 if getlvl({_armor}, "overlord") is 4
+		set player's max health to 20 if getlvl({_armor}, "overlord") is 5
+		heal player 
+	
+			
+		
+		
+
+		
+
+		
+			
+		

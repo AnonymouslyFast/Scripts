@@ -1,0 +1,9 @@
+command invsee [<player>]:
+	permission: invsee
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is set:	
+			open arg-1's inventory to player
+		else:
+			send "Please provide a player!"
+		

@@ -1,0 +1,33 @@
+function getTimeTranslation(time: integer) :: text:
+	set {_t} to "%{_time}% seconds" parsed as timespan
+	set {_t} to "%{_t}%"
+	replace all " and " with " " in {_t}
+	replace all " seconds" and " second" with "s" in {_t}
+	replace all " minutes" and " minute" with "m" in {_t}
+	replace all " hours" and " hour" with "h" in {_t}
+	replace all " days" and " day" with "d" in {_t}
+	replace all " weeks" and " week" with "w" in {_t}
+	return {_t}
+
+
+on join:
+	while player is online:
+		wait 1 second
+		player's gamemode is not creative
+		player has an oak sapling
+		loop all items in player's inventory where [uncolored name of input contains "Bonsai"]:
+			if checkForDead(loop-item) = true:
+				continue
+			set {_n} to nbt compound of loop-item
+			set {_age} to int tag "bonsai;age" of {_n}
+			add 1 to {_age}
+			set int tag "bonsai;age" of nbt compound of loop-item to {_age}
+			set {_random} to random integer between -100000 and 100000
+			set {_aget} to getTimeTranslation({_age})
+			set line 2 of lore of loop-item to "&7Age&8: &e%{_aget}%"
+			if {_age} > (345600 + {_random}):
+				set tag "bonsai;dead" of {_n} to true
+				set line 1 of lore of loop-item to "&7&o*Dead due to old age.*"
+				continue
+			continue
+			

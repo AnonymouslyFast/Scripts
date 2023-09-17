@@ -1,0 +1,17 @@
+command afk:
+	permission: skript.afk
+	permission message: &cNo permission!
+	trigger:
+		if {afk::%player's uuid%} is set:
+			clear {afk::%player's uuid%} 
+			clear {tag::%player's uuid%}
+			broadcast "&7%player% is out of &cAFK!"
+		else:
+			set {afk::%player's uuid%} to true
+			set {tag::%player's uuid%} to "&c&lAFK"
+			broadcast "&7%player% is now &cAFK!"
+			
+			
+on any player move:
+	if {afk::%player's uuid%} is true:
+		execute player command "afk"

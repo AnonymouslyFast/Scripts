@@ -1,0 +1,6 @@
+on damage:
+	if getArmorType(attacker, "fire") = 4:
+		getArmorType(victim, "fire") = 4:
+			chance of 25%:
+				stop
+		ignite victim for 5 seconds

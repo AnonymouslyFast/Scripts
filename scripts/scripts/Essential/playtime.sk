@@ -1,0 +1,6 @@
+command /playtime [<offline player = %player%>]:
+	aliases: pt
+	trigger:
+		send " "
+		send "&b%arg-1% &fhas played &3&lEcoZero &ffor &e%time played of arg-1%"
+		send " "

@@ -1,0 +1,80 @@
+command feed [<player>]:
+	permission: feed
+	permission message: &cNo permission!
+	trigger:
+		if arg-1 is not set:
+			feed player
+			send "You ate"
+		else:
+			if player has permission "feed.player":
+				feed arg-1
+				send "You gave %arg-1% food"
+			else:
+				send "&cNo permission!"
+				
+			#FLIGHT
+command fly [<player>]:
+	permission: skript.fly
+	permission message: &cNo permission
+	trigger:
+		if arg-1 is not set:
+			if player is flying:
+				make player stop flying
+				send "&7[&3&lE&b&lZ&7] Flight mode is now &cDisabled"
+			else:
+				make player fly
+				send "&7[&3&lE&b&lZ&7] Flight mode is now &aEnabled"
+		else:
+			if player has permission "staff.fly":
+				if arg-1 is flying:
+					make arg-1 stop flying
+					send "&7[&3&lE&b&lZ&7] Flight mode for &d%arg-1% &7is now &cDisabled"
+					send "&7[&3&lE&b&lZ&7] Flight mode is now &cDisabled" to arg-1 
+				else:
+					make player fly
+					send "&7[&3&lE&b&lZ&7] Flight mode for &d%arg-1% &7is now &aEnabled"
+					send "&7[&3&lE&b&lZ&7] Flight mode is now &aEnabled" to arg-1
+			else:
+				send "&cNo permission!"
+
+		#WARPS
+command setwarp <string>:
+	permission: staff.setWarp
+	trigger:
+		if arg-1 is not "delete":
+			set {warps::%arg-1%} to player's location
+			add arg-1 to {warpList::*}
+			send "&7[&3&lE&b&lZ&7] &d%arg-1%&7's location is now set to you position. &f(&b/warp %arg-1%&f)"
+		else:
+			clear {warps::%arg-1%} 
+			remove arg-1 from {warpList::*}
+			send "&7[&3&lE&b&lZ&7] &d%arg-1% &7is now deleted from the warp list."
+				
+command warp [<string>] [<player>]:
+	trigger:
+		if arg-1 is set:
+			if arg-2 is not set:
+				if {warpList::*} contains arg-1:
+					if player has permission "warp.%arg-1%":
+						teleport player to {warps::%arg-1%}
+					else:
+						send "&7[&3&lE&b&lZ&7] Please use a warp you have acess to!"
+				else:
+					send "&7[&3&lE&b&lZ&7] Please use a valid warp!"
+			else:
+				if player has permission "staff.warp":
+					if {warpList::*} contains arg-1:
+						teleport arg-2 to {warps::%arg-1%}
+						send "&7[&3&lE&b&lZ&7] &d%player% &7Teleported you to &b%arg-1%" to arg-2
+					else:
+						send "&7[&3&lE&b&lZ&7] Please use a valid warp!"
+				else:
+					send "&cNo permission!"
+		else:
+			send "&7[&3&lE&b&lZ&7] &7Please enter a valid warp name!"
+			
+on tab complete of "/warp":
+	set tab completion for position 1 to {warpList::*}
+					
+					
+			

@@ -1,0 +1,4 @@
+on script load:
+	send " " to all players where [input has permission "debug"]
+	send "&c&lARMOR &8- &fReloading armor files..." to all players where [input has permission "debug"]
+	send " " to all players where [input has permission "debug"]

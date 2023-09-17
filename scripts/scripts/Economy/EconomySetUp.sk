@@ -1,0 +1,115 @@
+options:
+	Start_amount: 50
+	prefix: &f[&3&lE&b&lZ&f]
+	
+on join:
+	if {balance::%player's uuid%} is not set:
+		set {balance::%player's uuid%} to {Start_amount}
+		
+		
+command economy [<string>] [<string>] [<string>]:
+	aliases: eco
+	permission: economy
+	trigger:
+		if arg-1 is "add":
+			if arg-2 is set:
+				if arg-3 is set:
+					set {_player} to arg-2 parsed as a player
+					if {_player} has played before:
+						set {_amount} to arg-3 parsed as a number
+						if {_amount} is a number:
+							add {_amount} to {balance::%{_player}'s uuid%}
+							send "{@prefix} > Added &d%{_amount}% &fto &d%{_player}%'s balance" 
+						else:
+							send "{@prefix} > That's not a vaild input!"
+					else:
+						send "{@prefix} > That player has not joined before!"
+				else:
+					send "{@prefix} > please provide a amount!"
+			else:
+				send "{@prefix} > please provide a player!"
+		else if arg-1 is "remove":
+			if arg-2 is set:
+				if arg-3 is set:
+					set {_player} to arg-2 parsed as a player
+					if {_player} has played before:
+						set {_amount} to arg-3 parsed as a number
+						if {_amount} is a number:
+							if {_amount} > {balance::%{_player}'s uuid%}:
+								send "{@prefix} > Please lower your number, %{_amount}% will make %{_player}%'s balance go in the negitives!"
+							else:
+								remove {_amount} from {balance::%{_player}'s uuid%}
+								send "{@prefix} > Removed &d%{_amount}% &fto &d%{_player}%'s balance" 
+						else:
+							send "{@prefix} > That's not a vaild input!"
+					else:
+						send "{@prefix} > That player has not joined before!"
+				else:
+					send "{@prefix} > please provide a amount!"
+			else:
+				send "{@prefix} > please provide a player!"
+		else if arg-1 is "reset":
+			if arg-2 is set:
+				if arg-2 != "*":
+					set {_player} to arg-2 parsed as a player
+					if {_player} has played before:
+						set {balance::%{_player}'s uuid%} to {@Start_amount}
+						send "{@prefix} > Reseted &d%{_player}%&f's balance to &d{@Start_amount}" 
+					else:
+						send "{@prefix} > That player has not joined before!"
+				else:
+					loop all players:
+						set {balance::%loop-player's uuid%} to {@Start_amount}
+					broadcast "{@prefix} > Reseted all player's balance to &d{@Start_amount}" 
+
+				
+			else:
+				send "{@prefix} > please provide a player!"
+		else:
+			send "{@prefix} > Please provide a vaild input!"
+			
+			
+command balance [<offlineplayer>]:
+	aliases: bal
+	trigger:
+		if arg-1 is set:
+			send "&2%arg-1%'s balance: &f$%{balance::%arg-1's uuid%}%" 
+		else:
+			send "&2Your balance: &f%{balance::%player's uuid%}%"
+			
+command pay [<player>] [<number>]:
+	permission: skript.pay
+	trigger:
+		if arg-1 is set:
+			if arg-2 is set:
+				if arg-2 >= 1:
+					if arg-2 <= {balance::%player's uuid%}:
+						add arg-2 to {balance::%arg-1's uuid%}
+						remove arg-2 from {balance::%player's uuid%}
+						send "&aPaid %arg-1%: &2&l$%arg-2%"
+						send "&a%player% paid you: &2&l$%arg-2%" to arg-1
+					else:
+						send "&3&lE&b&lZ &7You dont have enough money for that!"
+				else:
+					send "&3&lE&b&lZ &7You cannot input a negitive!"
+			else:
+				send "&3&lE&b&lZ &7Please specify the amount you want to pay them!"
+				
+		else:
+			send "&3&lE&b&lZ &7Please specify the player you want to pay!"
+	
+			
+on tab complete of "/balance" and "/bal":
+	set tab completions for position 1 to all offline players
+	
+on tab complete of "/economy" and "/eco":
+	set tab completions for position 1 to "add", "remove" and "reset"
+	if tab arg-1 = "add" or "remove":
+		set tab completions for position 2 to all players
+		set tab completions for position 3 to "1", "80", "69" and "420" 
+	else if tab arg-1 = "reset":
+		set tab completions for position 2 to "*" and all players
+
+		
+		
+	
