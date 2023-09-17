@@ -1,9 +1,0 @@
-options:
-	token: MTA4NjQ0MzAyODk1NDIzNDg4MA.G7GUdr.91cO80fvO7MrqepEINYX5n0J564gEtBgkuuVxo
-
-define new bot named "EcoMoney": 
-    token: "{@token}"
-    intents: default intents
-    policy: all
-    auto reconnect: true
-    compression: none
